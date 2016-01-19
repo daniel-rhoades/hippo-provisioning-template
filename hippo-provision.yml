@@ -1,0 +1,22 @@
+#
+# Ansible playbook for provisioning production-ready infrastructure hosting a deployment of the Hippo CMS product.
+#
+---
+- name: Hippo | Provision database infrastructure
+  include: provision-database.yml
+
+- name: Hippo | Configure database infrastructure
+  include: provision-database.yml
+
+- name: Hippo | Provision web server infrastructure
+  include: provision-webservers.yml
+
+- name: Hippo | Configure web servers
+  include: configure-webservers.yml
+
+- name: Hippo | Provision load balancers
+  include: provision-loadbalancers.yml
+
+- name: Hippo | Configure DNS
+  include: configure-dns.yml
+
