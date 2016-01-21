@@ -2,21 +2,44 @@
 # Ansible playbook for provisioning production-ready infrastructure hosting a deployment of the Hippo CMS product.
 #
 ---
-- name: Hippo | Provision database infrastructure
-  include: provision-database.yml
+- name: Website | Provision all required infrastructure
+  hosts: localhost
+  vars_files:
+    - vars/control-flags.yml
+  pre_tasks:
+    - name: Website | Check prerequisites
+      include: provision/prerequisites/prerequisites.yml
+  post_tasks:
+    - name: Website | Provision networking infrastructure
+      include: provision/networking/provision-networking.yml
 
-- name: Hippo | Configure database infrastructure
-  include: provision-database.yml
+    - name: Website | Provision database infrastructure
+      include: provision/database/provision-database.yml
 
-- name: Hippo | Provision web server infrastructure
-  include: provision-webservers.yml
+    - name: Website | Provision webserver infrastructure
+      include: provision/webservers/provision-webservers.yml
 
-- name: Hippo | Configure web servers
-  include: configure-webservers.yml
+    - name: Website | Provision load balancers
+      include: provision/loadbalancers/provision-loadbalancers.yml
 
-- name: Hippo | Provision load balancers
-  include: provision-loadbalancers.yml
+    - name: Website | Provision DNS
+      include: provision/dns/provision-dns.yml
 
-- name: Hippo | Configure DNS
-  include: configure-dns.yml
+- name: Website | Configure database
+  hosts: contentstore_instances
+  sudo: true
+  vars_files:
+    - vars/control-flags.yml
+  pre_tasks:
+    - name: Website | Process database configuration prerequisites
+      include: configure/prerequisites/prerequisites-database.yml
+  roles:
+    # Install docker service
+    - {
+        role: angstwad.docker_ubuntu,
+        when: requires_docker == true
+      }
+
+    # Configure the instance as a Hippo Content Store
+    - hippo-contentstore
 

@@ -1,0 +1,5 @@
+#
+# Setup Content Store on Vagrant hosted on a MySQL Docker container
+#
+- name: Website | Provision database | Vagrant | Specify the Content Store host
+  add_host: name={{ default_host }} groups=contentstore_instances requires_docker=true

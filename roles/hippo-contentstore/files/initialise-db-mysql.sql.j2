@@ -1,0 +1,3 @@
+create database {{ contentstore_database_name }};
+grant all on gogreen.* to '{{ contentstore_database_user }}'@'%' identified by '{{ contentstore_database_password }}';
+flush privileges;

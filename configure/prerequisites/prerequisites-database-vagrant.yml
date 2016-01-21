@@ -1,0 +1,11 @@
+#
+# Setup Prequisites on Vagrant
+#
+---
+- name: Install PIP
+  apt: name="python-pip"
+  sudo: true
+
+- name: Install docker-py as a workaround for Ansible issue
+  pip: name="docker-py"
+  sudo: true

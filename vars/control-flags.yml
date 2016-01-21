@@ -1,0 +1,11 @@
+#
+# Configurable flags which affect the execution of the playbook
+#
+
+# Providers
+vagrant: "vagrant"
+
+# Default provider
+provider: "{{ vagrant }}"
+
+default_host: "main"

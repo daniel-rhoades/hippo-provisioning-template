@@ -1,0 +1,8 @@
+#
+# Setup webservers on Vagrant
+#
+- name: Website | Provision webservers | Vagrant | Specify the Content Authoring host
+  add_host: name={{ default_host }} groups=contentauthoring_instances
+
+- name: Website | Provision webservers | Vagrant | Specify the Content Delivery host
+  add_host: name={{ default_host }} groups=contentdelivery_instances

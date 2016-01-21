@@ -1,0 +1,6 @@
+#
+# Checks and installs any prequisties
+#
+- name: Website | Process database configuration prerequisites | Vagrant
+  include: prerequisites-database-vagrant.yml
+  when: provider == "vagrant"

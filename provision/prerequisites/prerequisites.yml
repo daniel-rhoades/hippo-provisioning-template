@@ -1,0 +1,5 @@
+#
+# Checks and installs any prequisties
+#
+- name: Website | Check prerequisites | Common checks
+  include: prerequisites-common.yml

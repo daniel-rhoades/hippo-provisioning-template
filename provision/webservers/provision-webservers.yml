@@ -1,0 +1,4 @@
+---
+- name: Website | Provision webservers | Vagrant
+  include: provision-webservers-vagrant.yml
+  when: provider == "vagrant"

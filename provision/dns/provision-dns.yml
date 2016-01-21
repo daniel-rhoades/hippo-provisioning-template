@@ -1,0 +1,4 @@
+---
+- name: Website | Provision DNS | Vagrant
+  include: provision-dns-vagrant.yml
+  when: provider == "vagrant"

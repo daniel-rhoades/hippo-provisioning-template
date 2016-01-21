@@ -1,0 +1,4 @@
+---
+- name: Website | Provision database | Vagrant
+  include: provision-database-vagrant.yml
+  when: provider == "vagrant"
