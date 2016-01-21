@@ -11,7 +11,7 @@ server {
 
     resolver 8.8.8.8;
     proxy_pass http://${HIPPO_PORT_8080_TCP_ADDR}:${HIPPO_PORT_8080_TCP_PORT}/cms/;
-    proxy_redirect http://${HIPPO_PORT_8080_TCP_ADDR}:${HIPPO_PORT_8080_TCP_PORT}/ http://$host:${EXTERNAL_PORT}/;
+    proxy_redirect http://${HIPPO_PORT_8080_TCP_ADDR}:${HIPPO_PORT_8080_TCP_PORT}/cms/ http://$host:${EXTERNAL_PORT}/;
     proxy_cookie_path /cms/ /;
   }
 
