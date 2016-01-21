@@ -1,0 +1,15 @@
+application_name: gogreen
+
+contentauthoring_appserver_container_name: "{{ application_name }}-hippo-cms"
+contentauthoring_appserver_container_port: 8080
+contentauthoring_reverseproxy_container_name: "{{ application_name }}-nginx-cms"
+contentauthoring_reverseproxy_container_port: 8000
+contentauthoring_distribution_url: https://github.com/daniel-rhoades/hippo-gogreen/releases/download/v0.1/gogreen-0.1.0-SNAPSHOT-cms-distribution.tar.gz
+contentauthoring_distribution_src_directory: /tmp/hippo-cms
+
+contentdelivery_appserver_container_name: "{{ application_name }}-hippo-site"
+contentdelivery_appserver_container_port: 8081
+contentdelivery_reverseproxy_container_name: "{{ application_name }}-nginx-site"
+contentdelivery_reverseproxy_container_port: 8001
+contentdelivery_distribution_url: https://github.com/daniel-rhoades/hippo-gogreen/releases/download/v0.1/gogreen-0.1.0-SNAPSHOT-site-distribution.tar.gz
+contentdelivery_distribution_src_directory: /tmp/hippo-site

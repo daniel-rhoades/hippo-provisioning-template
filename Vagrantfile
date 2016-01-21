@@ -10,6 +10,8 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 
     config.vm.box = "ubuntu/trusty64"
 
+    config.vm.network :forwarded_port, guest: 8000, host: 8000
+    config.vm.network :forwarded_port, guest: 8001, host: 8001
     config.vm.network :forwarded_port, guest: 8080, host: 8080
     config.vm.network :forwarded_port, guest: 8081, host: 8081
 

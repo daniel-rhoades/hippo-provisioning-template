@@ -26,10 +26,12 @@
       include: provision/dns/provision-dns.yml
 
 - name: Website | Configure database
-  hosts: contentstore_instances
+  hosts: contentstore_instance
   sudo: true
   vars_files:
     - vars/control-flags.yml
+    - vars/contentstore.yml
+    - vars/system.yml
   pre_tasks:
     - name: Website | Process database configuration prerequisites
       include: configure/prerequisites/prerequisites-database.yml
@@ -42,4 +44,88 @@
 
     # Configure the instance as a Hippo Content Store
     - hippo-contentstore
+
+- name: Website | Configure Content Authoring webservers
+  hosts: contentauthoring_instances
+  sudo: true
+  vars_files:
+    - vars/contentstore.yml
+    - vars/control-flags.yml
+    - vars/hippo-docker.yml
+    - vars/reverseproxy.yml
+    - vars/system.yml
+  pre_tasks:
+      - name: Website | Process webserver configuration prerequisites
+        include: configure/prerequisites/prerequisites-webserver.yml
+  roles:
+    # Install docker service
+    - {
+        role: angstwad.docker_ubuntu,
+        when: requires_docker == true
+      }
+
+    # Install docker-hippo-tomcat role configured as the Content Authoring container
+    - {
+        role: docker-hippo-tomcat,
+        container_name: "{{ contentauthoring_appserver_container_name }}",
+        container_port: "{{ contentauthoring_appserver_container_port }}",
+        distribution_src: "{{ contentauthoring_distribution_src_directory }}",
+        contentstore_database_host: "{{ hostvars['localhost'].contentstore_database_host }}",
+        contentstore_container_name: "{{ hostvars['localhost'].contentstore_container_name }}",
+        url: "http://localhost:{{ contentauthoring_appserver_container_port }}/cms",
+        expected_http_response: 302
+      }
+
+    # Install docker-nginx-hippo configured to proxy requests to the Content Authoring container
+    - {
+        role: docker-nginx-hippo,
+        container_name: "{{ contentauthoring_reverseproxy_container_name }}",
+        container_port: "{{ contentauthoring_reverseproxy_container_port }}",
+        appserver_container_name: "{{ contentauthoring_appserver_container_name }}",
+        hippo_component: cms,
+        url: "http://localhost:{{ contentauthoring_reverseproxy_container_port }}/",
+        expected_http_response: 302
+      }
+
+- name: Website | Configure Content Delivery webservers
+  hosts: contentdelivery_instances
+  sudo: true
+  vars_files:
+    - vars/contentstore.yml
+    - vars/control-flags.yml
+    - vars/hippo-docker.yml
+    - vars/reverseproxy.yml
+    - vars/system.yml
+  pre_tasks:
+      - name: Website | Process webserver configuration prerequisites
+        include: configure/prerequisites/prerequisites-webserver.yml
+  roles:
+    # Install docker service
+    - {
+        role: angstwad.docker_ubuntu,
+        when: requires_docker == true
+      }
+
+    # Install docker-hippo-tomcat role configured as the Content Delivery container
+    - {
+        role: docker-hippo-tomcat,
+        container_name: "{{ contentdelivery_appserver_container_name }}",
+        container_port: "{{ contentdelivery_appserver_container_port }}",
+        distribution_src: "{{ contentdelivery_distribution_src_directory }}",
+        contentstore_database_host: "{{ hostvars['localhost'].contentstore_database_host }}",
+        contentstore_container_name: "{{ hostvars['localhost'].contentstore_container_name }}",
+        url: "http://localhost:{{ contentdelivery_appserver_container_port }}/",
+        expected_http_response: 404
+      }
+
+    # Install docker-nginx-hippo configured to proxy requests to the Content Delivery container
+    - {
+        role: docker-nginx-hippo,
+        container_name: "{{ contentdelivery_reverseproxy_container_name }}",
+        container_port: "{{ contentdelivery_reverseproxy_container_port }}",
+        appserver_container_name: "{{ contentdelivery_appserver_container_name }}",
+        hippo_component: site,
+        url: "http://localhost:{{ contentdelivery_reverseproxy_container_port }}/",
+        expected_http_response: 404
+      }
 

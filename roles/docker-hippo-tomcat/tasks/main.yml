@@ -1,0 +1,26 @@
+---
+- name: Website | Role | docker-hippo-tomcat | Install the configurable templated Hippo on Tomcat Docker image
+  docker:
+    state: reloaded
+    image: danielrhoades/hippo-tomcat-template:latest
+    ports:
+      - "{{ container_port }}:8080"
+    name: "{{ container_name }}"
+    volumes:
+      - "{{ distribution_src }}:/opt/cms/distributions:ro"
+    links:
+      - "{{ contentstore_container_name }}:mysql"
+    env:
+      HIPPO_CONTENTSTORE_USERNAME: "{{ contentstore_database_username }}"
+      HIPPO_CONTENTSTORE_PASSWORD: "{{ contentstore_database_password }}"
+      HIPPO_CONTENTSTORE_URL: "jdbc:mysql://{{ contentstore_database_host }}:3306/{{ contentstore_database_name }}?characterEncoding=utf8"
+
+- wait_for: timeout=60
+
+- name: Website | Role | docker-hippo-tomcat | Verify Hippo is accepting requests
+  shell: "curl --head --silent {{ url }}"
+  register: result
+  until: "result.stdout.find(\"{{ expected_http_response }}\") != -1"
+  retries: 5
+  delay: 5
+  sudo: False

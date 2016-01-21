@@ -1,4 +1,5 @@
-mysql_docker_container_name: gogreen-mysql
+contentstore_container_name: gogreen-mysql
+
 mysql_docker_container_image: mysql:latest
 mysql_docker_container_port: 3306
 

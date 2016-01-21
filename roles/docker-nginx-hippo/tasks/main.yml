@@ -1,0 +1,47 @@
+---
+- name: Website | Role | nginx | Create a nginx config directory to store the nginx site config as a volume for the Docker container
+  file:
+    path: /tmp/nginx-config
+    state: directory
+
+- name: Website | Role | nginx | Copy the nginx config for proxying Hippo CMS requests
+  copy:
+    src: "{{ contentauthoring_reverseproxy_config }}"
+    dest: /tmp/nginx-config/hippo-cms.conf.tmpl
+  when: hippo_component == "cms"
+
+- name: Website | Role | nginx | Copy the nginx config for proxying Hippo Site requests
+  copy:
+    src: "{{ contentdelivery_reverseproxy_config }}"
+    dest: /tmp/nginx-config/hippo-site.conf.tmpl
+  when: hippo_component == "site"
+
+- name: Website | Role | nginx | Create a logs directory to receive nginx logs as a volume for the Docker container
+  file:
+    path: /tmp/nginx-logs
+    state: directory
+
+- name: Website | Role | nginx | Install a configurable nginx container
+  docker:
+    name: "{{ container_name }}"
+    state: reloaded
+    image: "{{ reverseproxy_container_image }}"
+    ports:
+      - "{{ container_port }}:80"
+    volumes:
+      - /tmp/nginx-config:/etc/nginx/sites-templates:ro
+      - /tmp/nginx-logs:/var/log/nginx
+    links:
+      - "{{ appserver_container_name }}:hippo"
+    env:
+      EXTERNAL_PORT: "{{ container_port }}"
+
+- wait_for: timeout=10
+
+- name: Website | Role | docker-hippo-tomcat | Verify Hippo is accepting requests
+  shell: "curl --head --silent {{ url }}"
+  register: result
+  until: "result.stdout.find(\"{{ expected_http_response }}\") != -1"
+  retries: 5
+  delay: 5
+  sudo: False
