@@ -1,0 +1,71 @@
+---
+#
+# Variables for VPC
+#
+vpc_name: "{{ application }}-vpc"
+vpc_region: "{{ region }}"
+vpc_cidr_block: "172.40.0.0/16"
+
+# Public "Content Delivery" Application (2 AZs)
+subnet_contentdelivery_cidr_block_1: "172.40.10.0/24"
+subnet_contentdelivery_az_1: "{{ vpc_region }}a"
+
+subnet_contentdelivery_cidr_block_2: "172.40.20.0/24"
+subnet_contentdelivery_az_2: "{{ vpc_region }}b"
+
+# Public "Content Authoring" Application (2 AZs)
+subnet_contentauthoring_cidr_block_1: "172.40.30.0/24"
+subnet_contentauthoring_az_1: "{{ vpc_region }}a"
+
+subnet_contentauthoring_cidr_block_2: "172.40.40.0/24"
+subnet_contentauthoring_az_2: "{{ vpc_region }}b"
+
+# Private "Content Store" (2 AZs)
+subnet_contentstore_cidr_block_1: "172.40.50.0/24"
+subnet_contentstore_az_1: "{{ vpc_region }}a"
+
+subnet_contentstore_cidr_block_2: "172.40.60.0/24"
+subnet_contentstore_az_2: "{{ vpc_region }}b"
+
+#
+# Subnets definitions for the VPC
+#
+# *** DO NOT CHANGE ORDER WITHOUT UPDATING ../tasks/vpc.yml ***
+#
+vpc_subnets:
+ - cidr: "{{ subnet_contentdelivery_cidr_block_1 }}"
+   az: "{{ subnet_contentdelivery_az_1 }}"
+   resource_tags: { "Name":"{{ vpc_name }}-{{ subnet_contentdelivery_az_1 }}-contentdelivery-subnet" }
+
+ - cidr: "{{ subnet_contentdelivery_cidr_block_2 }}"
+   az: "{{ subnet_contentdelivery_az_2 }}"
+   resource_tags: { "Name":"{{ vpc_name }}-{{ subnet_contentdelivery_az_2 }}-contentdelivery-subnet" }
+
+ - cidr: "{{ subnet_contentauthoring_cidr_block_1 }}"
+   az: "{{ subnet_contentauthoring_az_1 }}"
+   resource_tags: { "Name":"{{ vpc_name }}-{{ subnet_contentauthoring_az_1 }}-contentauthoring-subnet" }
+
+ - cidr: "{{ subnet_contentauthoring_cidr_block_2 }}"
+   az: "{{ subnet_contentauthoring_az_2 }}"
+   resource_tags: { "Name":"{{ vpc_name }}-{{ subnet_contentauthoring_az_2 }}-contentauthoring-subnet" }
+
+ - cidr: "{{ subnet_contentstore_cidr_block_1 }}"
+   az: "{{ subnet_contentstore_az_1 }}"
+   resource_tags: { "Name":"{{ vpc_name }}-{{ subnet_contentstore_az_1 }}-contentstore-subnet" }
+
+ - cidr: "{{ subnet_contentstore_cidr_block_2 }}"
+   az: "{{ subnet_contentstore_az_2 }}"
+   resource_tags: { "Name":"{{ vpc_name }}-{{ subnet_contentstore_az_2 }}-contentstore-subnet" }
+
+#
+# Routing tables for public subnets
+#
+public_subnet_routes:
+ - subnets:
+     - "{{ subnet_contentdelivery_cidr_block_1 }}"
+     - "{{ subnet_contentdelivery_cidr_block_2 }}"
+     - "{{ subnet_contentauthoring_cidr_block_1 }}"
+     - "{{ subnet_contentauthoring_cidr_block_2 }}"
+   routes:
+     - dest: 0.0.0.0/0
+       gw: igw

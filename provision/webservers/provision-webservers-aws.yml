@@ -1,0 +1,46 @@
+#
+# Provision AWS EC2 instances as web servers
+#
+- include_vars: ../../vars/aws/ec2.yml
+- include_vars: ../../vars/aws/ec2_key.yml
+- include_vars: ../../vars/aws/region.yml
+- include_vars: ../../vars/aws/tags.yml
+- include_vars: ../../vars/aws/vpc.yml
+
+- include: aws/tasks/ec2_find_ami_image.yml
+
+# Provision Content Delivery EC2 instances
+- include: aws/tasks/ec2_webserver.yml
+  vars:
+    instance_name: "{{ contentdelivery_instance_name }}"
+    ec2_instance_type: "{{ contentdelivery_ec2_instance_type }}"
+    instance_count: "{{ contentdelivery_instance_count }}"
+    subnets:
+      - "{{ subnet_contentdelivery_1_id }}"
+      - "{{ subnet_contentdelivery_2_id }}"
+#- name: AWS | EC2 | Store EC2 instance information for AZ 1
+#  set_fact: contentdelivery_ec2_instances_az1="{{ webservers.results[0].tagged_instances }}"
+#- name: AWS | EC2 | Store EC2 instance information for AZ 2
+#  set_fact: contentdelivery_ec2_instances_az2="{{ webservers.results[1].tagged_instances }}"
+
+- name: Website | Provision webservers | AWS | Specify the Content Authoring hosts
+  add_host: hostname={{ item.public_ip }} groupname=contentauthoring_instances
+  with_items: webservers.instances
+
+# Provision Content Authoring EC2 instances
+- include: aws/tasks/ec2_webserver.yml
+  vars:
+    instance_name: "{{ contentauthoring_instance_name }}"
+    ec2_instance_type: "{{ contentauthoring_ec2_instance_type }}"
+    instance_count: "{{ contentauthoring_instance_count }}"
+    subnets:
+      - "{{ subnet_contentauthoring_1_id }}"
+      - "{{ subnet_contentauthoring_2_id }}"
+#- name: AWS | EC2 | Store EC2 instance information for AZ 1
+#  set_fact: contentauthoring_ec2_instances_az1="{{ webservers.results[0].tagged_instances }}"
+#- name: AWS | EC2 | Store EC2 instance information for AZ 2
+#  set_fact: contentauthoring_ec2_instances_az2="{{ webservers.results[1].tagged_instances }}"
+
+- name: Website | Provision webservers | AWS | Specify the Content Delivery hosts
+  add_host: hostname={{ item.public_ip }} groupname=contentdelivery_instances
+  with_items: webservers.instances

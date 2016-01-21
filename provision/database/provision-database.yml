@@ -1,4 +1,6 @@
 ---
-- name: Website | Provision database | Vagrant
-  include: provision-database-vagrant.yml
+- include: provision-database-vagrant.yml
   when: provider == "vagrant"
+
+- include: provision-database-aws.yml
+  when: provider == "aws"

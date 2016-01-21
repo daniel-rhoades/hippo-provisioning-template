@@ -1,0 +1,20 @@
+---
+#
+# Variables that define defaults for RDS management, not the username and password for the database are not stored
+# here, they must be passed in as command line arguments:
+#
+# - contentstore_database_username
+# - contentstore_database_password
+#
+# Alternatively defaults can be set in a encrypted file using ansible-vault
+#
+
+contentstore_database_instance_name: "{{ vpc_name }}-contentstore-rds"
+contentstore_database_size: 5
+contentstore_database_instance_type: db.t2.medium
+
+contentstore_subnet_groupname: "{{ vpc_name }}-contentstore-rds-subnet"
+
+db_engine: MySQL
+
+rds_database_host: not_set

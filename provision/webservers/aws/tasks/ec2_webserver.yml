@@ -1,0 +1,27 @@
+---
+- name: Website | Provision webservers | AWS | EC2 | Create the EC2 instance(s) for {{ instance_name }}
+  local_action:
+    module: ec2
+    region: "{{ vpc_region }}"
+    group: [inbound-app, inbound-ssh, outbound-all]
+    keypair: "{{ key_name }}"
+    instance_type: "{{ ec2_instance_type }}"
+    image: "{{ image_id.ami }}"
+    vpc_subnet_id: "{{ item }}"
+    assign_public_ip: True
+    wait: True
+    wait_timeout: 600
+    exact_count: "{{ instance_count }}"
+    count_tag:
+      component: "{{ instance_name }}"
+      env: "{{ env }}"
+      application: "{{ application }}"
+      subnet: "{{ item }}"
+    instance_tags:
+      component: "{{ instance_name }}"
+      Name: "{{ vpc_name }}_{{ instance_name }}"
+      env: "{{ env }}"
+      application: "{{ application }}"
+      subnet: "{{ item }}"
+  with_items: "{{ subnets }}"
+  register: webservers

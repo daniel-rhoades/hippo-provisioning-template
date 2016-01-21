@@ -4,6 +4,8 @@
 ---
 - name: Website | Provision all required infrastructure
   hosts: localhost
+  connection: local
+  gather_facts: no
   vars_files:
     - vars/control-flags.yml
   pre_tasks:

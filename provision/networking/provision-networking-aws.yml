@@ -1,0 +1,22 @@
+#
+# Provision an AWS VPC to host the web infrastructure
+#
+
+- include_vars: ../../vars/aws/ec2.yml
+- include_vars: ../../vars/aws/region.yml
+- include_vars: ../../vars/aws/tags.yml
+- include_vars: ../../vars/aws/vpc.yml
+
+- include: aws/tasks/vpc.yml
+
+- name: Website | Provision networking | AWS | VPC | Set the subnet id as facts
+  set_fact:
+    vpc_id: "{{ vpc.vpc_id }}"
+    subnet_contentdelivery_1_id: "{{ vpc.subnets[0].id }}"
+    subnet_contentdelivery_2_id: "{{ vpc.subnets[1].id }}"
+    subnet_contentauthoring_1_id: "{{ vpc.subnets[2].id }}"
+    subnet_contentauthoring_2_id: "{{ vpc.subnets[3].id }}"
+    subnet_contentstore_1_id: "{{ vpc.subnets[4].id }}"
+    subnet_contentstore_2_id: "{{ vpc.subnets[5].id }}"
+
+- include: aws/tasks/ec2_securitygroups.yml

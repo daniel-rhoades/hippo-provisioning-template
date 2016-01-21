@@ -1,0 +1,13 @@
+---
+- name: Website | Provision networking | AWS | VPC | Creating the VPC and subnets
+  local_action:
+    module: ec2_vpc
+    region: "{{ vpc_region }}"
+    state: present
+    cidr_block: "{{ vpc_cidr_block }}"
+    resource_tags: { "Name":"{{ vpc_name }}" }
+    subnets: "{{ vpc_subnets }}"
+    internet_gateway: yes
+    route_tables: "{{ public_subnet_routes }}"
+  register: vpc
+
