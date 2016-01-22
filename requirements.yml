@@ -1,1 +1,3 @@
 - src: angstwad.docker_ubuntu
+- src: danielrhoades/hippo-tomcat-template:latest
+- src: shepmaster/nginx-template-image
