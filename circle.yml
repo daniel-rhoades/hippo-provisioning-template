@@ -18,4 +18,4 @@ test:
 
   post:
     # Run playbook
-    - ansible-playbook --extra-vars='{\"provider\":\"vagrant\"}' --skip-tags \"loadbalancers\" hippo-provision.yml
+    - ansible-playbook --extra-vars='{"provider":"vagrant"}' --skip-tags "loadbalancers" hippo-provision.yml
