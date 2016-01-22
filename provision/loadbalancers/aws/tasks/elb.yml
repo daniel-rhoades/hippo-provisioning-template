@@ -1,0 +1,22 @@
+---
+- name: AWS | ELB | Create the {{ load_balancer_name }} ELB instance(s)
+  local_action:
+    module: ec2_elb_lb
+    name: "{{ load_balancer_name }}"
+    security_group_ids: "{{ elb_sg.results[0].group_id }}"
+    state: present
+    region: "{{ vpc_region }}"
+    subnets: "{{ subnets }}"
+    purge_subnets: "{{ elb_purge_subnets }}"
+    cross_az_load_balancing: "{{ elb_cross_az_load_balancing }}"
+    connection_draining_timeout: "{{ elb_connection_draining_timeout }}"
+    listeners: "{{ elb_listeners }}"
+    cross_az_load_balancing: "{{ elb_cross_az_load_balancing }}"
+    health_check:
+      ping_protocol: "{{ elb_ping_protocol }}"
+      ping_port: "{{ elb_ping_port }}"
+      response_timeout: "{{ elb_response_timeout }}"
+      interval: "{{ elb_interval }}"
+      unhealthy_threshold: "{{ elb_unhealthy_threshold }}"
+      healthy_threshold: "{{ elb_healthy_threshold }}"
+  register: webserver_elb

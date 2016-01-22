@@ -1,4 +1,5 @@
----
-- name: Website | Provision loadbalancers | Vagrant
-  include: provision-loadbalancers-vagrant.yml
+- include: provision-loadbalancers-vagrant.yml
   when: provider == "vagrant"
+
+- include: provision-loadbalancers-aws.yml
+  when: provider == "aws"

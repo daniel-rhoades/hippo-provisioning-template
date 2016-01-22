@@ -1,0 +1,14 @@
+- name: Wait for SSH to be available
+  local_action:
+    module: wait_for
+    host: "{{ ec2_public_dns_name }}"
+    port: 22
+    search_regex: OpenSSH
+    delay: 10
+  sudo: False
+
+- name: Add host SSH key to "known_hosts"
+  local_action: command sh -c 'ssh-keyscan -t ecdsa {{ ec2_ip_address }} >> ~/.ssh/known_hosts'
+
+- set_fact: system_user=ubuntu
+- set_fact: system_group=ubuntu

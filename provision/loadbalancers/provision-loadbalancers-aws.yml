@@ -1,0 +1,30 @@
+- include_vars: ../../vars/aws/ec2_key.yml
+- include_vars: ../../vars/aws/region.yml
+- include_vars: ../../vars/aws/tags.yml
+- include_vars: ../../vars/aws/elb.yml
+
+- include: aws/tasks/elb_securitygroups.yml
+
+# Provision the load balancer for the Content Delivery instances
+- include: aws/tasks/elb.yml
+  vars:
+    load_balancer_name: "{{ contentdelivery_load_balancer_name }}"
+    elb_cross_az_load_balancing: yes
+    elb_availability_zones: "{{ contentdelivery_elb_availability_zones }}"
+    subnets:
+      - "{{ subnet_contentdelivery_1_id }}"
+      - "{{ subnet_contentdelivery_2_id }}"
+- name: AWS | ELB | Store ELB instance information for Content Delivery
+  set_fact: contentdelivery_elb="{{ webserver_elb.elb.dns_name }}"
+
+# Provision the load balancer for the Content Authoring instances
+- include: aws/tasks/elb.yml
+  vars:
+    load_balancer_name: "{{ contentauthoring_load_balancer_name }}"
+    elb_cross_az_load_balancing: yes
+    elb_availability_zones: "{{ contentauthoring_elb_availability_zones }}"
+    subnets:
+      - "{{ subnet_contentauthoring_1_id }}"
+      - "{{ subnet_contentauthoring_2_id }}"
+- name: AWS | ELB | Store ELB instance information for Content Authoring
+  set_fact: contentauthoring_elb="{{ webserver_elb.elb.dns_name }}"

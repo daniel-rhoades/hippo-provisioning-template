@@ -7,7 +7,7 @@
     keypair: "{{ key_name }}"
     instance_type: "{{ ec2_instance_type }}"
     image: "{{ image_id.ami }}"
-    vpc_subnet_id: "{{ item }}"
+    vpc_subnet_id: "{{ subnet }}"
     assign_public_ip: True
     wait: True
     wait_timeout: 600
@@ -16,12 +16,17 @@
       component: "{{ instance_name }}"
       env: "{{ env }}"
       application: "{{ application }}"
-      subnet: "{{ item }}"
+      subnet: "{{ subnet }}"
     instance_tags:
       component: "{{ instance_name }}"
       Name: "{{ vpc_name }}_{{ instance_name }}"
       env: "{{ env }}"
       application: "{{ application }}"
-      subnet: "{{ item }}"
-  with_items: "{{ subnets }}"
-  register: webservers
+      subnet: "{{ subnet }}"
+  register: webserver
+
+- name: Website | Provision webservers | AWS | Specify the Content Authoring hosts
+  add_host:
+    hostname: "{{ item.public_ip }}"
+    groupname: "{{ webserver_groupname }}"
+  with_items: webserver.tagged_instances

@@ -1,3 +1,6 @@
+- include: prerequisites-webserver-aws.yml
+  when: provider == "aws"
+
 - name: Create directory to hold the Hippo CMS distribution archive
   file:
     path: "{{ contentauthoring_distribution_src_directory }}"

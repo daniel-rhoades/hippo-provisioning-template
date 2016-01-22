@@ -1,0 +1,22 @@
+- include_vars: ../../vars/aws/elb.yml
+- include_vars: ../../vars/aws/vpc.yml
+- include_vars: ../../vars/aws/region.yml
+- include_vars: ../../vars/aws/tags.yml
+
+- name: Add instance to load balancer (Content Authoring)
+  local_action:
+    module: ec2_elb
+    region: "{{ vpc_region }}"
+    ec2_elbs: "{{ contentauthoring_load_balancer_name }}"
+    instance_id: "{{ ec2_id }}"
+    state: present
+  when: component == 'contentauthoring'
+
+- name: Add instance to load balancer (Content Delivery)
+  local_action:
+    module: ec2_elb
+    region: "{{ vpc_region }}"
+    ec2_elbs: "{{ contentdelivery_load_balancer_name }}"
+    instance_id: "{{ ec2_id }}"
+    state: present
+  when: component == 'contentdelivery'

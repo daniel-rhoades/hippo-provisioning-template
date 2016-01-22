@@ -32,3 +32,5 @@
 
 - name: Website | Provision database | AWS | RDS | Store RDS instance information
   set_fact: contentstore_database_host="{{ rds.instance.endpoint }}"
+
+- set_fact: contentstore_container_name=none

@@ -1,5 +1,5 @@
 ---
-- name: Website | Role | docker-hippo-tomcat | Install the configurable templated Hippo on Tomcat Docker image
+- name: Website | Role | docker-hippo-tomcat | Install the configurable templated Hippo on Tomcat Docker image (Docker link version)
   docker:
     state: reloaded
     image: danielrhoades/hippo-tomcat-template:latest
@@ -14,6 +14,22 @@
       HIPPO_CONTENTSTORE_USERNAME: "{{ contentstore_database_username }}"
       HIPPO_CONTENTSTORE_PASSWORD: "{{ contentstore_database_password }}"
       HIPPO_CONTENTSTORE_URL: "jdbc:mysql://{{ contentstore_database_host }}:3306/{{ contentstore_database_name }}?characterEncoding=utf8"
+  when: contentstore_container_name != 'none'
+
+- name: Website | Role | docker-hippo-tomcat | Install the configurable templated Hippo on Tomcat Docker image (Docker non-link version)
+  docker:
+    state: reloaded
+    image: danielrhoades/hippo-tomcat-template:latest
+    ports:
+      - "{{ container_port }}:8080"
+    name: "{{ container_name }}"
+    volumes:
+      - "{{ distribution_src }}:/opt/cms/distributions:ro"
+    env:
+      HIPPO_CONTENTSTORE_USERNAME: "{{ contentstore_database_username }}"
+      HIPPO_CONTENTSTORE_PASSWORD: "{{ contentstore_database_password }}"
+      HIPPO_CONTENTSTORE_URL: "jdbc:mysql://{{ contentstore_database_host }}:3306/{{ contentstore_database_name }}?characterEncoding=utf8"
+  when: contentstore_container_name == 'none'
 
 - wait_for: timeout=60
 
