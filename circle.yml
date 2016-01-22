@@ -12,7 +12,7 @@ test:
 
     # Install Ansible
     - sudo apt-get install -y -q software-properties-common
-    - sudo apt-add-repository ppa:ansible/ansible
+    - sudo apt-add-repository -y ppa:ansible/ansible
     - sudo apt-get update -q
     - sudo apt-get install -y -q ansible
 
