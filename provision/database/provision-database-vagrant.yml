@@ -6,6 +6,6 @@
 
 - set_fact: contentstore_database_host="$MYSQL_PORT_3306_TCP_ADDR"
 
-- include_vars: ../../roles/hippo-contentstore/defaults/mysql-docker.yml
+# - include_vars: ../../roles/hippo-contentstore/defaults/mysql-docker.yml
 
-- set_fact: contentstore_container_name={{ contentstore_container_name }}
+- set_fact: contentstore_container_name=gogreen-mysql
