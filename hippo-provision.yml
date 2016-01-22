@@ -120,6 +120,14 @@
         component: "contentauthoring"
       tags: ['configure', 'loadbalancers']
 
+- name: Website | Configure Content Authoring DNS
+  hosts: contentauthoring_instances
+  tasks:
+    - include: configure/dns/configure-dns.yml
+      vars:
+        component: "contentauthoring"
+      tags: ['configure', 'dns']
+
 - name: Website | Configure Content Delivery webservers
   hosts: contentdelivery_instances
   sudo: true
@@ -168,3 +176,11 @@
       vars:
         component: "contentdelivery"
       tags: ['configure', 'loadbalancers']
+
+- name: Website | Configure Content Delivery DNS
+  hosts: contentauthoring_instances
+  tasks:
+    - include: configure/dns/configure-dns.yml
+      vars:
+        component: "contentdelivery"
+      tags: ['configure', 'dns']

@@ -16,6 +16,8 @@
       - "{{ subnet_contentdelivery_2_id }}"
 - name: AWS | ELB | Store ELB instance information for Content Delivery
   set_fact: contentdelivery_elb="{{ webserver_elb.elb.dns_name }}"
+- name: AWS | ELB | Store ELB zone ID information for Content Delivery
+  set_fact: contentdelivery_elb_zone="{{ webserver_elb.elb.hosted_zone_id }}"
 
 # Provision the load balancer for the Content Authoring instances
 - include: aws/tasks/elb.yml
@@ -28,3 +30,5 @@
       - "{{ subnet_contentauthoring_2_id }}"
 - name: AWS | ELB | Store ELB instance information for Content Authoring
   set_fact: contentauthoring_elb="{{ webserver_elb.elb.dns_name }}"
+- name: AWS | ELB | Store ELB zone ID information for Content Authoring
+  set_fact: contentauthoring_elb_zone="{{ webserver_elb.elb.hosted_zone_id }}"

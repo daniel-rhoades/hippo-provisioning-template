@@ -1,0 +1,14 @@
+- include_vars: ../../vars/aws/elb.yml
+- include_vars: ../../vars/aws/vpc.yml
+- include_vars: ../../vars/aws/region.yml
+- include_vars: ../../vars/aws/tags.yml
+
+- route53:
+    command=create
+    zone="{{ route53_zone }}"
+    record="{{ application }}-{{ env }}-contentauthoring.{{ route53_zone }}"
+    type=A
+    value="{{ hostvars['localhost'].contentauthoring_elb }}"
+    alias=True
+    alias_hosted_zone_id="{{ hostvars['localhost'].contentauthoring_elb_zone }}"
+    alias_evaluate_target_health=True

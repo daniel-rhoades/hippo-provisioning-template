@@ -1,0 +1,2 @@
+- include: configure-dns-aws.yml
+  when: provider == "aws-NEEDS ANSIBLE 2.0"
