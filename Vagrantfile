@@ -10,8 +10,8 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 
     config.vm.box = "ubuntu/trusty64"
 
-    config.vm.network :forwarded_port, guest: 8000, host: 8000
-    config.vm.network :forwarded_port, guest: 8001, host: 8001
+    config.vm.network :forwarded_port, guest: 8000, host: 80
+    config.vm.network :forwarded_port, guest: 8001, host: 81
     config.vm.network :forwarded_port, guest: 8080, host: 8080
     config.vm.network :forwarded_port, guest: 8081, host: 8081
 
@@ -38,6 +38,6 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     config.vm.provision "ansible" do |ansible|
         ansible.verbose = "v"
         ansible.playbook = "hippo-provision.yml"
-        ansible.raw_arguments  = ["--extra-vars='{\"provider\":\"vagrant\"}'"]
+        ansible.raw_arguments  = ["--extra-vars='{\"provider\":\"vagrant\"}' --skip-tags \"loadbalancers\""]
     end
 end
