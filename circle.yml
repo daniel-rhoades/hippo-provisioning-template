@@ -1,3 +1,7 @@
+machine:
+  services:
+    - docker
+
 test:
   pre:
     # Stop services we don't care about, they just use up RAM
