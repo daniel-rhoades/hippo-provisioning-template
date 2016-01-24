@@ -49,7 +49,7 @@
     - {
         role: angstwad.docker_ubuntu,
         tags: ['configure', 'database', 'apply_role', 'install_docker'],
-        when: requires_docker is defined and requires_docker == true
+        when: requires_docker is defined and requires_docker == true and install_docker == true
       }
 
     # Configure the instance as a Hippo Content Store
@@ -85,6 +85,7 @@
     - {
         role: angstwad.docker_ubuntu,
         tags: ['configure', 'webservers', 'apply_role', 'install_docker'],
+        when: install_docker == true
       }
 
     # Install docker-hippo-tomcat role configured as the Content Authoring container
@@ -146,6 +147,7 @@
     - {
         role: angstwad.docker_ubuntu,
         tags: ['configure', 'webservers', 'apply_role', 'install_docker'],
+        when: install_docker == true
       }
 
     # Install docker-hippo-tomcat role configured as the Content Delivery container

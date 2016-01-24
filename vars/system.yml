@@ -1,2 +1,4 @@
 system_user: vagrant
 system_group: vagrant
+
+install_docker: false

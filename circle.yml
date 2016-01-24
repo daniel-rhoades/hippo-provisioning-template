@@ -24,4 +24,4 @@ test:
 
   post:
     # Run playbook
-    - ansible-playbook -vvv --extra-vars='{"provider":"vagrant", "default_host":"localhost", "system_user":"ubuntu", "system_group":"ubuntu", "docker_py_version":"1.2.3"}' --skip-tags "loadbalancers" --connection=local hippo-provision.yml
+    - ansible-playbook -vvv --extra-vars='{"provider":"vagrant", "default_host":"localhost", "system_user":"ubuntu", "system_group":"ubuntu", "docker_py_version":"1.2.3", "install_docker":"false"}' --skip-tags "loadbalancers" --connection=local hippo-provision.yml
