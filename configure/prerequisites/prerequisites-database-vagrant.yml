@@ -7,5 +7,5 @@
   sudo: true
 
 - name: Install docker-py as a workaround for Ansible issue
-  pip: name="docker-py"
+  pip: name="docker-py" version="{{ docker_py_version }}"
   sudo: true
