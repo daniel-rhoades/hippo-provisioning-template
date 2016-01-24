@@ -20,4 +20,4 @@ test:
 
   post:
     # Run playbook
-    - ansible-playbook --extra-vars='{"provider":"vagrant", "default_host":"all"}' --skip-tags "loadbalancers" hippo-provision.yml
+    - ansible-playbook --extra-vars='{"provider":"vagrant", "default_host":"localhost"}' --skip-tags "loadbalancers" hippo-provision.yml
