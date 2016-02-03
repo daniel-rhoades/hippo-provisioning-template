@@ -8,4 +8,4 @@
 
 # - include_vars: ../../roles/hippo-contentstore/defaults/mysql-docker.yml
 
-- set_fact: contentstore_container_name=gogreen-mysql
+- set_fact: contentstore_container_name="{{ contentstore_database_name }}-mysql"

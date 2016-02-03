@@ -2,13 +2,6 @@
 # Setup Content Store on AWS RDS hosted on a MySQL instance
 #
 
-- include_vars: ../../vars/aws/region.yml
-- include_vars: ../../vars/aws/rds.yml
-- include_vars: ../../vars/aws/tags.yml
-- include_vars: ../../vars/aws/vpc.yml
-
-- include_vars: ../../vars/contentstore.yml
-
 # Provision an RDS subnet group to host the RDS instance
 - include: aws/tasks/rds-subnet.yml
   vars:

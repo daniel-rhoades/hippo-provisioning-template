@@ -2,11 +2,6 @@
 # Provision an AWS VPC to host the web infrastructure
 #
 
-- include_vars: ../../vars/aws/ec2.yml
-- include_vars: ../../vars/aws/region.yml
-- include_vars: ../../vars/aws/tags.yml
-- include_vars: ../../vars/aws/vpc.yml
-
 - include: aws/tasks/vpc.yml
 
 - name: Website | Provision networking | AWS | VPC | Set the subnet id as facts

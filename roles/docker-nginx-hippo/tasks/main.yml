@@ -3,18 +3,19 @@
   file:
     path: /tmp/nginx-config
     state: directory
+  when: contentauthoring_reverseproxy_config is defined and contentdelivery_reverseproxy_config is defined
 
 - name: Website | Role | nginx | Copy the nginx config for proxying Hippo CMS requests
   copy:
     src: "{{ contentauthoring_reverseproxy_config }}"
     dest: /tmp/nginx-config/hippo-cms.conf.tmpl
-  when: hippo_component == "cms"
+  when: hippo_component == "cms" and contentauthoring_reverseproxy_config is defined
 
 - name: Website | Role | nginx | Copy the nginx config for proxying Hippo Site requests
   copy:
     src: "{{ contentdelivery_reverseproxy_config }}"
     dest: /tmp/nginx-config/hippo-site.conf.tmpl
-  when: hippo_component == "site"
+  when: hippo_component == "site" and contentdelivery_reverseproxy_config is defined
 
 - name: Website | Role | nginx | Create a logs directory to receive nginx logs as a volume for the Docker container
   file:
@@ -25,7 +26,7 @@
   docker:
     name: "{{ container_name }}"
     state: reloaded
-    image: "{{ reverseproxy_container_image }}"
+    image: "{{ docker_image }}"
     ports:
       - "{{ container_port }}:80"
     volumes:
@@ -35,6 +36,22 @@
       - "{{ appserver_container_name }}:hippo"
     env:
       EXTERNAL_PORT: "{{ container_port }}"
+  when: contentauthoring_reverseproxy_config is defined and contentdelivery_reverseproxy_config is defined
+
+- name: Website | Role | nginx | Install a custom nginx container
+  docker:
+    name: "{{ container_name }}"
+    state: reloaded
+    image: "{{ docker_image }}"
+    ports:
+      - "{{ container_port }}:80"
+    volumes:
+      - /tmp/nginx-logs:/var/log/nginx
+    links:
+      - "{{ appserver_container_name }}:hippo"
+    env:
+      EXTERNAL_PORT: "{{ container_port }}"
+  when: contentauthoring_reverseproxy_config is undefined and contentdelivery_reverseproxy_config is undefined
 
 - wait_for: timeout=10
 

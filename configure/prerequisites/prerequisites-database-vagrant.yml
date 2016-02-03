@@ -6,6 +6,6 @@
   apt: name="python-pip"
   sudo: true
 
-- name: Install docker-py as a workaround for Ansible issue
-  pip: name="docker-py" version="{{ docker_py_version }}"
+- name: Install docker-py as a workaround for Ansible issue (specific version)
+  pip: name="docker-py" version="1.2.3"
   sudo: true

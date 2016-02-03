@@ -6,8 +6,6 @@
   hosts: localhost
   connection: local
   gather_facts: no
-  vars_files:
-    - vars/control-flags.yml
   pre_tasks:
     - name: Website | Check prerequisites
       include: provision/prerequisites/prerequisites.yml
@@ -36,10 +34,6 @@
 - name: Website | Configure database
   hosts: contentstore_instance
   sudo: true
-  vars_files:
-    - vars/control-flags.yml
-    - vars/contentstore.yml
-    - vars/system.yml
   pre_tasks:
     - name: Website | Process database configuration prerequisites
       include: configure/prerequisites/prerequisites-database.yml
@@ -53,19 +47,16 @@
       }
 
     # Configure the instance as a Hippo Content Store
-    - hippo-contentstore
+    - {
+        role: hippo-contentstore,
+        contentstore_container_name: "{{ hostvars['localhost'].contentstore_container_name }}",
+      }
 
 - name: Website | Configure Content Authoring webservers (process pre-reqs)
   hosts:
     - contentauthoring_instances
     - contentdelivery_instances
   gather_facts: no
-  vars_files:
-    - vars/contentstore.yml
-    - vars/control-flags.yml
-    - vars/hippo-docker.yml
-    - vars/reverseproxy.yml
-    - vars/system.yml
   tasks:
     - name: Website | Process webserver configuration prerequisites
       include: configure/prerequisites/prerequisites-webserver.yml
@@ -74,12 +65,6 @@
 - name: Website | Configure Content Authoring webservers
   hosts: contentauthoring_instances
   sudo: true
-  vars_files:
-    - vars/contentstore.yml
-    - vars/control-flags.yml
-    - vars/hippo-docker.yml
-    - vars/reverseproxy.yml
-    - vars/system.yml
   roles:
     # Install docker service
     - {
@@ -91,6 +76,7 @@
     # Install docker-hippo-tomcat role configured as the Content Authoring container
     - {
         role: docker-hippo-tomcat,
+        docker_image: "{{ contentauthoring_appserver_docker_image }}",
         container_name: "{{ contentauthoring_appserver_container_name }}",
         container_port: "{{ contentauthoring_appserver_container_port }}",
         distribution_src: "{{ contentauthoring_distribution_src_directory }}",
@@ -104,6 +90,7 @@
     # Install docker-nginx-hippo configured to proxy requests to the Content Authoring container
     - {
         role: docker-nginx-hippo,
+        docker_image: "{{ contentauthoring_reverseproxy_docker_image }}",
         container_name: "{{ contentauthoring_reverseproxy_container_name }}",
         container_port: "{{ contentauthoring_reverseproxy_container_port }}",
         appserver_container_name: "{{ contentauthoring_appserver_container_name }}",
@@ -115,8 +102,6 @@
 
 - name: Website | Configure Content Authoring loadbalancers
   hosts: contentauthoring_instances
-  vars_files:
-    - vars/control-flags.yml
   tasks:
     - include: configure/loadbalancers/configure-loadbalancers.yml
       vars:
@@ -125,8 +110,6 @@
 
 - name: Website | Configure Content Authoring DNS
   hosts: contentauthoring_instances
-  vars_files:
-    - vars/control-flags.yml
   tasks:
     - include: configure/dns/configure-dns.yml
       vars:
@@ -136,12 +119,6 @@
 - name: Website | Configure Content Delivery webservers
   hosts: contentdelivery_instances
   sudo: true
-  vars_files:
-    - vars/contentstore.yml
-    - vars/control-flags.yml
-    - vars/hippo-docker.yml
-    - vars/reverseproxy.yml
-    - vars/system.yml
   roles:
     # Install docker service
     - {
@@ -153,6 +130,7 @@
     # Install docker-hippo-tomcat role configured as the Content Delivery container
     - {
         role: docker-hippo-tomcat,
+        docker_image: "{{ contentdelivery_appserver_docker_image }}",
         container_name: "{{ contentdelivery_appserver_container_name }}",
         container_port: "{{ contentdelivery_appserver_container_port }}",
         distribution_src: "{{ contentdelivery_distribution_src_directory }}",
@@ -166,6 +144,7 @@
     # Install docker-nginx-hippo configured to proxy requests to the Content Delivery container
     - {
         role: docker-nginx-hippo,
+        docker_image: "{{ contentdelivery_reverseproxy_docker_image }}",
         container_name: "{{ contentdelivery_reverseproxy_container_name }}",
         container_port: "{{ contentdelivery_reverseproxy_container_port }}",
         appserver_container_name: "{{ contentdelivery_appserver_container_name }}",
@@ -177,8 +156,6 @@
 
 - name: Website | Configure Content Delivery loadbalancers
   hosts: contentdelivery_instances
-  vars_files:
-    - vars/control-flags.yml
   tasks:
     - include: configure/loadbalancers/configure-loadbalancers.yml
       vars:
@@ -187,8 +164,6 @@
 
 - name: Website | Configure Content Delivery DNS
   hosts: contentauthoring_instances
-  vars_files:
-    - vars/control-flags.yml
   tasks:
     - include: configure/dns/configure-dns.yml
       vars:

@@ -1,8 +1,12 @@
 ---
+- debug: var={{ docker_image }}
+- debug: var={{ container_name }}
+- debug: var={{ contentstore_container_name }}
+
 - name: Website | Role | docker-hippo-tomcat | Install the configurable templated Hippo on Tomcat Docker image (Docker link version)
   docker:
     state: reloaded
-    image: danielrhoades/hippo-tomcat-template:latest
+    image: "{{ docker_image }}"
     ports:
       - "{{ container_port }}:8080"
     name: "{{ container_name }}"
@@ -19,7 +23,7 @@
 - name: Website | Role | docker-hippo-tomcat | Install the configurable templated Hippo on Tomcat Docker image (Docker non-link version)
   docker:
     state: reloaded
-    image: danielrhoades/hippo-tomcat-template:latest
+    image: "{{ docker_image }}"
     ports:
       - "{{ container_port }}:8080"
     name: "{{ container_name }}"

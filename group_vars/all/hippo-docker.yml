@@ -1,15 +1,15 @@
 application_name: gogreen
 
+hippo_tomcat_template_docker_image: danielrhoades/hippo-tomcat-template
+
+contentauthoring_appserver_docker_image: "{{ hippo_tomcat_template_docker_image }}"
 contentauthoring_appserver_container_name: "{{ application_name }}-hippo-cms"
 contentauthoring_appserver_container_port: 8080
-contentauthoring_reverseproxy_container_name: "{{ application_name }}-nginx-cms"
-contentauthoring_reverseproxy_container_port: 80
 contentauthoring_distribution_url: https://github.com/daniel-rhoades/hippo-gogreen/releases/download/v0.1/gogreen-0.1.0-SNAPSHOT-cms-distribution.tar.gz
 contentauthoring_distribution_src_directory: /tmp/hippo-cms
 
+contentdelivery_appserver_docker_image: "{{ hippo_tomcat_template_docker_image }}"
 contentdelivery_appserver_container_name: "{{ application_name }}-hippo-site"
 contentdelivery_appserver_container_port: 8080
-contentdelivery_reverseproxy_container_name: "{{ application_name }}-nginx-site"
-contentdelivery_reverseproxy_container_port: 80
 contentdelivery_distribution_url: https://github.com/daniel-rhoades/hippo-gogreen/releases/download/v0.1/gogreen-0.1.0-SNAPSHOT-site-distribution.tar.gz
 contentdelivery_distribution_src_directory: /tmp/hippo-site

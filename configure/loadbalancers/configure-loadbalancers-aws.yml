@@ -1,8 +1,3 @@
-- include_vars: ../../vars/aws/elb.yml
-- include_vars: ../../vars/aws/vpc.yml
-- include_vars: ../../vars/aws/region.yml
-- include_vars: ../../vars/aws/tags.yml
-
 - name: Add instance to load balancer (Content Authoring)
   local_action:
     module: ec2_elb

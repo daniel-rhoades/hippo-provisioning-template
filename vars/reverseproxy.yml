@@ -1,3 +1,0 @@
-reverseproxy_container_image: shepmaster/nginx-template-image
-contentauthoring_reverseproxy_config: hippo-cms.conf.tmpl
-contentdelivery_reverseproxy_config: hippo-site.conf.tmpl

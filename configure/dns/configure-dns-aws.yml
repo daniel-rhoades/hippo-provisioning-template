@@ -1,8 +1,3 @@
-- include_vars: ../../vars/aws/elb.yml
-- include_vars: ../../vars/aws/vpc.yml
-- include_vars: ../../vars/aws/region.yml
-- include_vars: ../../vars/aws/tags.yml
-
 - route53:
     command=create
     zone="{{ route53_zone }}"

@@ -1,3 +1,5 @@
+contentstore_container_name: "{{ application_name }}-mysql"
+
 contentstore_database_name: gogreen
 contentstore_database_username: gogreen
 contentstore_database_password: password

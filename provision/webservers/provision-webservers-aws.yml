@@ -1,12 +1,6 @@
 #
 # Provision AWS EC2 instances as web servers
 #
-- include_vars: ../../vars/aws/ec2.yml
-- include_vars: ../../vars/aws/ec2_key.yml
-- include_vars: ../../vars/aws/region.yml
-- include_vars: ../../vars/aws/tags.yml
-- include_vars: ../../vars/aws/vpc.yml
-
 - include: aws/tasks/ec2_find_ami_image.yml
 
 # Provision Content Delivery EC2 instances

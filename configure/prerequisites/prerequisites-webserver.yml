@@ -9,10 +9,10 @@
     group: "{{ system_group }}"
 
 - name: Copy the archive to the directory
-  get_url:
-    url: "{{ contentauthoring_distribution_url }}"
-  #copy:
-  #  src: ../../gogreen-0.1.0-SNAPSHOT-cms-distribution.tar.gz
+  #get_url:
+  #  url: "{{ contentauthoring_distribution_url }}"
+  copy:
+    src: ~/Downloads/gogreen-0.1.0-SNAPSHOT-cms-distribution.tar.gz
     dest: "{{ contentauthoring_distribution_src_directory }}"
 
 - name: Create directory to hold the Hippo site distribution archive
@@ -23,8 +23,8 @@
     group: "{{ system_group }}"
 
 - name: Copy the archive to the directory
-  get_url:
-    url: "{{ contentauthoring_distribution_url }}"
-  #copy:
-  #  src: ../../gogreen-0.1.0-SNAPSHOT-site-distribution.tar.gz
+  #get_url:
+  #  url: "{{ contentauthoring_distribution_url }}"
+  copy:
+    src: ~/Downloads/gogreen-0.1.0-SNAPSHOT-site-distribution.tar.gz
     dest: "{{ contentdelivery_distribution_src_directory }}"

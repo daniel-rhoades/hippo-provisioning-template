@@ -1,0 +1,7 @@
+{
+  "provider": "aws",
+  "install_docker": "true",
+  "system_user": "ubuntu",
+  "system_group": "ubuntu",
+  "ssh_key_name": "dan-ref-arc"
+}

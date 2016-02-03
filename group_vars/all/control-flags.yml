@@ -8,4 +8,4 @@ vagrant: "vagrant"
 # Default provider
 provider: "{{ vagrant }}"
 
-default_host: "main"
+default_host: "localhost"

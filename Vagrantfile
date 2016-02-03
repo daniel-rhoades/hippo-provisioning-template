@@ -25,19 +25,13 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     # See https://github.com/mitchellh/vagrant/issues/5005
     config.ssh.insert_key = false
 
-    #config.vm.provision "docker"
+    # Provision Vagrant's default Docker service
+    config.vm.provision "docker"
 
-    # Install Ansible
-    #config.vm.provision "shell", inline: "sudo apt-get install -y -q software-properties-common"
-    #config.vm.provision "shell", inline: "sudo apt-add-repository ppa:ansible/ansible"
-    #config.vm.provision "shell", inline: "sudo apt-get update -q"
-    #config.vm.provision "shell", inline: "sudo apt-get install -y -q ansible"
-    #config.vm.provision "shell", inline: "sudo easy_install pip"
-    #config.vm.provision "shell", inline: "sudo pip install ansible"
-
+    # Provision the environment using Ansible
     config.vm.provision "ansible" do |ansible|
-        ansible.verbose = "v"
+        ansible.verbose = "vvv"
         ansible.playbook = "hippo-provision.yml"
-        ansible.raw_arguments  = ["--extra-vars='{\"provider\":\"vagrant\"}' --skip-tags \"loadbalancers\""]
+        ansible.extra_vars = "@vagrant-env.json"
     end
 end
