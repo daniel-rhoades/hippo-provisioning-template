@@ -24,4 +24,4 @@ test:
 
   post:
     # Run playbook
-    - ansible-playbook -vvv --extra-vars='@vagrant-env.json' --connection=local hippo-provision.yml
+    - ansible-playbook -vvv --extra-vars='@circle-env.json' --connection=local hippo-provision.yml
