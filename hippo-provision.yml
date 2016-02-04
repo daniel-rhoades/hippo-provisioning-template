@@ -69,8 +69,7 @@
     # Install docker service
     - {
         role: angstwad.docker_ubuntu,
-        tags: ['configure', 'webservers', 'apply_role', 'install_docker'],
-        when: install_docker == true
+        tags: ['configure', 'webservers', 'apply_role', 'install_docker']
       }
 
     # Install docker-hippo-tomcat role configured as the Content Authoring container
@@ -123,8 +122,7 @@
     # Install docker service
     - {
         role: angstwad.docker_ubuntu,
-        tags: ['configure', 'webservers', 'apply_role', 'install_docker'],
-        when: install_docker == true
+        tags: ['configure', 'webservers', 'apply_role', 'install_docker']
       }
 
     # Install docker-hippo-tomcat role configured as the Content Delivery container
@@ -137,7 +135,7 @@
         contentstore_database_host: "{{ hostvars['localhost'].contentstore_database_host }}",
         contentstore_container_name: "{{ hostvars['localhost'].contentstore_container_name }}",
         url: "http://localhost:{{ contentdelivery_appserver_container_port }}/",
-        expected_http_response: 200,
+        expected_http_response: 404,
         tags: ['configure', 'webservers', 'apply_role', 'install_hippo'],
       }
 
