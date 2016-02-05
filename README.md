@@ -1,4 +1,6 @@
 # hippo-provisioning-template
+[![Circle CI](https://circleci.com/gh/daniel-rhoades/hippo-provisioning-template.svg?style=svg)](https://circleci.com/gh/daniel-rhoades/hippo-provisioning-template)
+
 Templated provisioning of infrastructure and build for a Hippo project deployment, to include:
 
 * DNS
