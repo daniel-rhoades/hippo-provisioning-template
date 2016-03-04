@@ -23,10 +23,11 @@
       env: "{{ env }}"
       application: "{{ application }}"
       subnet: "{{ subnet }}"
-  register: webserver
+  register: webservers
 
-- name: Website | Provision webservers | AWS | Specify the Content Authoring hosts
+- name: Website | Provision webservers | AWS | Store the web server hosts in the specified group
   add_host:
-    hostname: "{{ item.public_ip }}"
-    groupname: "{{ webserver_groupname }}"
-  with_items: webserver.tagged_instances
+    name: "{{ item.public_dns_name }}"
+    groups: "{{ webserver_groupname }}"
+    ec2_id: "{{ item.id }}"
+  with_items: webservers.tagged_instances
