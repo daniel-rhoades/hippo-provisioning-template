@@ -8,7 +8,7 @@
   sudo: False
 
 - name: Add host SSH key to "known_hosts"
-  local_action: command sh -c 'ssh-keyscan -t ecdsa {{ ec2_ip_address }} >> ~/.ssh/known_hosts'
+  local_action: command sh -c 'ssh-keyscan -t ecdsa {{ inventory_hostname }} >> ~/.ssh/known_hosts'
 
 - set_fact: install_docker=true
 - set_fact: system_user=ubuntu

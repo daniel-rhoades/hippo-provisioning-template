@@ -190,8 +190,10 @@ The Ansible playbooks in this project will automate doing all those things for y
 
 Soon I plan to add the following to the build:
 
+* Consider Terraform integration;
+* SSL configuration;
 * AWS Cloudfront and AWS WAF options;
-* AWS ECS or Mesos options;
+* Docker Swarm, AWS ECS or Mesos options;
 * Immutable infrastructure;
 * Logging, monitoring and alerting;
 * Auto-scaling;
