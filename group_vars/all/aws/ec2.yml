@@ -1,62 +1,21 @@
 ---
-#
-# Variables for the EC2 instances (e.g. web servers) to host the CMS application
-#
-contentdelivery_ec2_instance_type: t2.medium
-contentauthoring_ec2_instance_type: "{{ contentdelivery_ec2_instance_type }}"
+# Name of the SSH key registered in IAM
+key_name: "{{ ssh_key_name }}"
 
-contentdelivery_instance_name: contentdelivery
-contentauthoring_instance_name: contentauthoring
+# AWS EC2 image ID, this image should be a *unix image with the ECS Agent already installed
+ec2_ami_id: ami-76e95b05
 
-contentdelivery_instance_count: 1
-contentauthoring_instance_count: 1
+# EC2 instance type for all instances created during auto scaling
+ec2_instance_type: t2.medium
 
-contentdelivery_ec2_selectpattern: "tag_component_{{ contentdelivery_instance_name }}:&tag_env_{{ env }}:&tag_application_{{ application }}"
-contentauthoring_ec2_selectpattern: "tag_component_{{ contentauthoring_instance_name }}:&tag_env_{{ env }}:&tag_application_{{ application }}"
+# Name to be applied to any EC2 instances
+ec2_instance_name: ecs_host
 
-inbound_security_groups:
-  - sg_name: inbound-app
-    sg_description: allow http and https access
-    sg_rules:
-      - proto: tcp
-        from_port: 80
-        to_port: 80
-        cidr_ip: 0.0.0.0/0
+# Initial number of EC2 instances to auto scale
+ec2_instance_count: 2
 
-      - proto: tcp
-        from_port: 8080
-        to_port: 8080
-        cidr_ip: 0.0.0.0/0
-
-  - sg_name: inbound-ssh
-    sg_description: allow ssh access
-    sg_rules:
-     - proto: tcp
-       from_port: 22
-       to_port: 22
-       cidr_ip: 0.0.0.0/0
-
-  - sg_name: internal-inbound-mysql
-    sg_description: allow mysql access to internal IP addresses to the VPC only
-    sg_rules:
-     - proto: tcp
-       from_port: 3306
-       to_port: 3306
-       cidr_ip: "{{ vpc_cidr_block }}"
-
-outbound_security_groups:
-  - sg_name: outbound-all
-    sg_description: allows all outbound traffic
-    sg_rules:
-      - proto: all
-        cidr_ip: 0.0.0.0/0
-
-#
-# AMI Image information, used to search for a particular AMI ID to use for EC2 instance builds
-#
-
-linux_distribution: ubuntu
-ubuntu_release: trusty
-ami_store: ebs
-virutalization_type: hvm
-cpu_architecture: amd64
+# Tags to apply to all EC2 instances created during auto scaling
+ec2_tags:
+  - component: "{{ ec2_instance_name }}"
+    Name: "{{ vpc_name }}-{{ ec2_instance_name }}"
+    env: "{{ env }}"

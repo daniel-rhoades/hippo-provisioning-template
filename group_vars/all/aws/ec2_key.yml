@@ -1,7 +1,0 @@
----
-
-#
-# SSH key information, this must be given as a command line argument, e.g.
-# ansible-playbook <my_playbook> -e ssh_key_name=my_key
-#
-key_name: "{{ ssh_key_name }}"

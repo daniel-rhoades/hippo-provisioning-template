@@ -1,0 +1,23 @@
+---
+# Name of the ECS cluster
+cms_ecs_cluster_name: "{{ application_name }}-{{ env }}"
+
+# Name of the ECS Task Definition for the Content Delivery component
+contentdelivery_ecs_task_definition_family: "{{ my_ecs_cluster_name }}-contentdelivery"
+contentdelivery_ecs_task_definition_revision: 9
+
+# Name of the ECS Task Definition for the Content Authoring component
+contentauthoring_ecs_task_definition_family: "{{ my_ecs_cluster_name }}-contentauthoring"
+contentauthoring_ecs_task_definition_revision: 1
+
+# Name, version and number of initial tasks of the ECS Service for the Content Delivery component
+contentdelivery_ecs_service_name: "{{ contentdelivery_ecs_task_definition_family }}-service"
+contentdelivery_ecs_service_version: 2
+contentdelivery_ecs_task_definition_count: 4
+
+# Name, version and number of initial tasks of the ECS Service for the Content Authoring component
+contentauthoring_ecs_service_name: "{{ contentauthoring_ecs_task_definition_family }}-service"
+contentauthoring_ecs_service_version: 1
+contentauthoring_ecs_task_definition_count: 2
+
+ecs_service_profile_name: "ecsServiceRole"

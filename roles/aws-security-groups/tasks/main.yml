@@ -1,0 +1,41 @@
+# Check pre-requisites
+- include: pre-requisites.yml
+
+- name: "AWS | Provision networking | Create Inbound Security Groups"
+  local_action:
+    module: ec2_group
+    name: "{{ item.sg_name }}"
+    description: "{{ item.sg_description }}"
+    region: "{{ vpc_region }}"
+    vpc_id: "{{ vpc_id }}"
+    state: present
+    rules: "{{ item.sg_rules }}"
+  with_items: "{{ inbound_security_groups }}"
+  register: ec2_group_inbound_sg
+
+- debug: var=ec2_group_inbound_sg verbosity=4
+
+- name: "AWS | Provision networking | Create Outbound Security Groups"
+  local_action:
+    module: ec2_group
+    name: "{{ item.sg_name }}"
+    description: "{{ item.sg_description }}"
+    region: "{{ vpc_region }}"
+    vpc_id: "{{ vpc_id }}"
+    state: present
+    rules_egress: "{{ item.sg_rules }}"
+  with_items: "{{ outbound_security_groups }}"
+  register: ec2_group_outbound_sg
+
+- debug: var=ec2_group_outbound_sg verbosity=4
+
+- name: "AWS | Provision networking | Tag Security Groups"
+  local_action:
+    module: ec2_tag
+    resource: "{{ item.group_id}}"
+    region: "{{ vpc_region }}"
+    state: present
+    tags: "{{ security_group_resource_tags }}"
+  with_items:
+    - "{{ ec2_group_inbound_sg.results }}"
+    - "{{ ec2_group_outbound_sg.results }}"

@@ -1,0 +1,80 @@
+- set_fact: "nginx_conf_contents={{ lookup('file', nginx_conf) }}"
+- debug: var=nginx_conf_contents verbosity=4
+
+# Task Definition: A description of an application that contains one or more container definitions
+- name: "Nginx/Tomcat | Describe the application as a task definition"
+  ecs_taskdefinition:
+    state: present
+    family: "{{ ecs_task_definition_family }}"
+    revision: "{{ ecs_task_definition_revision }}"
+    volumes:
+      - name: nginx-site
+      - name: hippo-distribution
+    containers:
+      - name: "{{ nginx_container_name }}"
+        cpu: 100
+        essential: true
+        image: "{{ nginx_image }}"
+        memory: 300
+        mountPoints:
+          - containerPath: "{{ nginx_site_template_path }}"
+            sourceVolume: nginx-site
+        portMappings:
+          - containerPort: 80
+            hostPort: "{{ nginx_host_port }}"
+
+      - name: "{{ hippo_container_name }}"
+        cpu: 500
+        essential: true
+        image: "{{ hippo_image }}"
+        memory: 2048
+        environment:
+          - name: "HIPPO_CONTENTSTORE_USERNAME"
+            value: "{{ contentstore_database_username }}"
+
+          - name: "HIPPO_CONTENTSTORE_PASSWORD"
+            value: "{{ contentstore_database_password }}"
+
+          - name: "HIPPO_CONTENTSTORE_URL"
+            value: "jdbc:mysql://{{ contentstore_database_host }}:3306/{{ contentstore_database_name }}?characterEncoding=utf8"
+
+          - name: "HIPPO_DISTRO_URL"
+            value: "{{ distribution_source_url }}"
+        portMappings:
+          - containerPort: 80
+            hostPort: "{{ nginx_host_port }}"
+
+      - name: busybox
+        command:
+          - "/bin/sh -c \"echo '{{ nginx_conf_contents }}' > {{ nginx_site_template_path }}/{{ nginx_conf }}\""
+        cpu: 10
+        entryPoint:
+          - sh
+          - "-c"
+        essential: false
+        image: busybox
+        memory: 200
+        links:
+          - "{{ hippo_container_name }}:hippo"
+        volumesFrom:
+          - sourceContainer: "{{ nginx_container_name }}"
+  register: ecs_taskdefinition_output
+
+- debug: var=ecs_taskdefinition_output verbosity=4
+
+# Service: An Amazon ECS service allows you to run and maintain a specified number of instances of a task definition simultaneously
+- name: "ECS | Provision a service using the previous task definition for a specific number of instances"
+  ecs_service:
+    state: present
+    name: "{{ ecs_service_name }}"
+    cluster: "{{ ecs_cluster_name }}"
+    task_definition: "{{ ecs_task_definition_family }}:{{ ecs_task_definition_revision }}"
+    desired_count: "{{ ecs_task_definition_count }}"
+    role: "{{ ecs_iam_role }}"
+    load_balancers:
+      - loadBalancerName: "{{ elb_name }}"
+        containerName: "{{ nginx_container_name }}"
+        containerPort: 80
+  register: ecs_service_output
+
+- debug: var=ecs_service_output verbosity=4

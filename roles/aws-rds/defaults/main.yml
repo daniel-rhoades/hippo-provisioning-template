@@ -1,0 +1,16 @@
+# Default the RDS subnet group to the name of the RDS instance it supports, change this if you are creating multiple
+# RDS instances in a subnet group
+rds_subnet_groupname: "{{ rds_instance_name }}"
+
+# If you want the RDS instance to be available cross-AZs
+rds_multi_az: yes
+
+# Tags to apply to your RDS instance
+rds_tags:
+  component: "{{ rds_instance_name }}"
+
+# Wait for RDS instance to be created before moving on to the next task
+rds_wait: true
+
+# Timeout for waiting for the RDS instance to be created
+rds_wait_timeout: 1800

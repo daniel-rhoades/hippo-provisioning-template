@@ -9,12 +9,10 @@
 # Alternatively defaults can be set in a encrypted file using ansible-vault
 #
 
-contentstore_database_instance_name: "{{ vpc_name }}-contentstore-rds"
+contentstore_database_instance_name: "{{ cms_vpc_name }}-cstore"
 contentstore_database_size: 5
 contentstore_database_instance_type: db.t2.medium
 
-contentstore_subnet_groupname: "{{ vpc_name }}-contentstore-rds-subnet"
+contentstore_subnet_groupname: "{{ cms_vpc_name }}-cstore"
 
 db_engine: MySQL
-
-rds_database_host: not_set

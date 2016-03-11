@@ -1,0 +1,29 @@
+# Purge existing listeners on ELB that are not found in listeners
+elb_purge_subnets: yes
+
+# Distribute load across all configured Availability Zones
+elb_cross_az_load_balancing: yes
+
+# Wait a specified timeout allowing connections to drain before terminating an instance
+elb_connection_draining_timeout: 60
+
+# Listeners for the ELB, 80:80 is available by default
+elb_listeners:
+ - protocol: http
+   load_balancer_port: 80
+   instance_protocol: http
+   instance_port: 80
+
+elb_health_check:
+  ping_protocol: "tcp"
+  ping_port: "80"
+  response_timeout: "10"
+  interval: "30"
+  unhealthy_threshold: "2"
+  healthy_threshold: "10"
+
+# Overwrites existing entries if required
+route53_overwrite: true
+
+# If you want Route 53 to monitor target health
+route53_alias_evaluate_target_health: true

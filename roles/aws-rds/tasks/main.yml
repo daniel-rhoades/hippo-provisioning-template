@@ -1,0 +1,35 @@
+# Check pre-requisites
+- include: pre-requisites.yml
+
+- name: AWS | RDS | Create RDS subnet group in the VPC
+  local_action:
+    module: rds_subnet_group
+    state: present
+    name: "{{ rds_subnet_groupname }}"
+    description: "RDS subnet group"
+    subnets: "{{ rds_subnets }}"
+  register: rds_subnet
+
+- debug: var=rds_subnet verbosity=4
+
+- name: AWS | RDS | Create the RDS instance(s), this process can take a long time depending on the instance type...
+  local_action:
+    module: rds
+    command: create
+    multi_zone: "{{ rds_multi_az }}"
+    region: "{{ region }}"
+    instance_name: "{{ rds_instance_name }}"
+    db_engine: "{{ db_engine }}"
+    size: "{{ rds_database_size }}"
+    instance_type: "{{ rds_instance_type }}"
+    username: "{{ rds_username }}"
+    password: "{{ rds_password }}"
+    db_name: "{{ rds_db_name }}"
+    subnet: "{{ rds_subnet_groupname }}"
+    vpc_security_groups: "{{ rds_vpc_security_groups }}"
+    tags: "{{ rds_tags }}"
+    wait: "{{ rds_wait }}"
+    wait_timeout: "{{ rds_wait_timeout }}"
+  register: rds
+
+- debug: var=rds verbosity=4

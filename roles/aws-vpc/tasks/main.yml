@@ -1,0 +1,16 @@
+# Check pre-requisites
+- include: pre-requisites.yml
+
+- name: "AWS | VPC | Provision the VPC and subnets"
+  local_action:
+    module: ec2_vpc
+    region: "{{ vpc_region }}"
+    state: present
+    cidr_block: "{{ vpc_cidr_block }}"
+    resource_tags: "{{ vpc_resource_tags }}"
+    subnets: "{{ vpc_subnets }}"
+    internet_gateway: "{{ vpc_internet_gateway }}"
+    route_tables: "{{ public_subnet_routes }}"
+  register: vpc
+
+- debug: var=vpc verbosity=4

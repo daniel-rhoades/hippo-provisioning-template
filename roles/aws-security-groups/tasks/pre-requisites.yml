@@ -1,0 +1,15 @@
+- name: "AWS | Security Groups | Check VPC region has been defined (vpc_region)"
+  fail: msg="You must specify the region in which you created the VPC, e.g. eu-west-1"
+  when: vpc_region is undefined
+
+- name: "AWS | Security Groups | Check VPC ID has been defined (vpc_id)"
+  fail: msg="You must specify the VPC ID that you wish to create the security groups within, e.g. vpc-xxxxxxxx"
+  when: vpc_id is undefined
+
+- name: "AWS | Security Groups | Check inbound security groups have been defined (ec2_group_inbound_sg)"
+  fail: msg="You must specify a list of inbound security groups to create, see README for more information"
+  when: ec2_group_inbound_sg is undefined
+
+- name: "AWS | Security Groups | Check outbound security groups have been defined (ec2_group_outbound_sg)"
+  fail: msg="You must specify a list of outbound security groups to create, see README for more information"
+  when: ec2_group_outbound_sg is undefined
