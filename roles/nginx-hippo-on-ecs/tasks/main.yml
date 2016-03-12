@@ -1,4 +1,5 @@
-- set_fact: "nginx_conf_contents={{ lookup('file', nginx_conf) }}"
+- set_fact: "nginx_conf_with_dir=files/{{ nginx_conf }}"
+- set_fact: "nginx_conf_contents={{ lookup('file', nginx_conf_with_dir) }}"
 - debug: var=nginx_conf_contents verbosity=4
 
 # Task Definition: A description of an application that contains one or more container definitions
@@ -7,18 +8,19 @@
     state: present
     family: "{{ ecs_task_definition_family }}"
     revision: "{{ ecs_task_definition_revision }}"
-    volumes:
-      - name: nginx-site
-      - name: hippo-distribution
     containers:
       - name: "{{ nginx_container_name }}"
         cpu: 100
         essential: true
         image: "{{ nginx_image }}"
         memory: 300
-        mountPoints:
-          - containerPath: "{{ nginx_site_template_path }}"
-            sourceVolume: nginx-site
+        entryPoint:
+          - "bash"
+          - "-c"
+        command:
+          - "{{ nginx_conf_contents }}"
+        links:
+          - "{{ hippo_container_name }}:hippo"
         portMappings:
           - containerPort: 80
             hostPort: "{{ nginx_host_port }}"
@@ -41,23 +43,7 @@
           - name: "HIPPO_DISTRO_URL"
             value: "{{ distribution_source_url }}"
         portMappings:
-          - containerPort: 80
-            hostPort: "{{ nginx_host_port }}"
-
-      - name: busybox
-        command:
-          - "/bin/sh -c \"echo '{{ nginx_conf_contents }}' > {{ nginx_site_template_path }}/{{ nginx_conf }}\""
-        cpu: 10
-        entryPoint:
-          - sh
-          - "-c"
-        essential: false
-        image: busybox
-        memory: 200
-        links:
-          - "{{ hippo_container_name }}:hippo"
-        volumesFrom:
-          - sourceContainer: "{{ nginx_container_name }}"
+          - containerPort: 8080
   register: ecs_taskdefinition_output
 
 - debug: var=ecs_taskdefinition_output verbosity=4

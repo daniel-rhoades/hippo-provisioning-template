@@ -12,7 +12,9 @@ ec2_instance_type: t2.medium
 ec2_instance_name: ecs_host
 
 # Initial number of EC2 instances to auto scale
-ec2_instance_count: 2
+cms_ec2_asg_desired_capacity: 4
+
+cms_ec2_asg_max_size: 8
 
 # Tags to apply to all EC2 instances created during auto scaling
 ec2_tags:

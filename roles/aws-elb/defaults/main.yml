@@ -22,6 +22,11 @@ elb_health_check:
   unhealthy_threshold: "2"
   healthy_threshold: "10"
 
+elb_stickiness:
+  type: loadbalancer
+  enabled: yes
+  expiration: 300
+
 # Overwrites existing entries if required
 route53_overwrite: true
 

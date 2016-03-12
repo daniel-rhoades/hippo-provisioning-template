@@ -14,6 +14,7 @@
     connection_draining_timeout: "{{ elb_connection_draining_timeout }}"
     listeners: "{{ elb_listeners }}"
     health_check: "{{ elb_health_check }}"
+    stickiness: "{{ elb_stickiness }}"
   register: elb
 
 - debug: var=elb verbosity=4

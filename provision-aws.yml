@@ -31,6 +31,8 @@
     # Provision ECS with auto scaling EC2 instances
     - {
         role: aws-ecs-autoscale,
+        ec2_asg_desired_capacity: "{{ cms_ec2_asg_desired_capacity }}",
+        ec2_asg_max_size: "{{ cms_ec2_asg_max_size }}",
         ecs_cluster_name: "{{ cms_ecs_cluster_name }}",
         ec2_security_groups: [
           "{{ ec2_group_inbound_sg.results[0].group_id }}",
@@ -115,16 +117,10 @@
         component: "contentdelivery",
         vpc_name: "{{ cms_vpc_name }}",
 
-        nginx_image: "{{ nginx_template_docker_image }}",
-        nginx_host_port: 80,
-        nginx_conf: "files/{{ contentdelivery_reverseproxy_config }}",
+        nginx_conf: "{{ contentdelivery_reverseproxy_config }}",
 
-        hippo_image: "{{ contentdelivery_appserver_container_name }}",
-        hippo_container_name: "{{ contentdelivery_appserver_docker_image }}",
-        #contentstore_database_username: "{{ contentstore_database_username }}",
-        #contentstore_database_password: "{{ contentstore_database_password }}",
+        hippo_image: "{{ contentdelivery_appserver_docker_image }}",
         contentstore_database_host: "{{ rds.instance.endpoint }}",
-        #contentstore_database_name: "{{ contentstore_database_name }}",
         distribution_source_url: "{{ contentdelivery_distribution_url }}",
 
         elb_name: "{{ contentdelivery_elb_name }}",
@@ -132,4 +128,23 @@
         ecs_task_definition_count: "{{ contentdelivery_ecs_task_definition_count }}",
         ecs_task_definition_revision: "{{ contentdelivery_ecs_task_definition_revision }}",
         ecs_service_version: "{{ contentdelivery_ecs_service_version }}"
+      }
+
+    # Configure the Content Authoring service
+    - {
+        role: nginx-hippo-on-ecs,
+        component: "contentauthoring",
+        vpc_name: "{{ cms_vpc_name }}",
+
+        nginx_conf: "{{ contentauthoring_reverseproxy_config }}",
+
+        hippo_image: "{{ contentauthoring_appserver_docker_image }}",
+        contentstore_database_host: "{{ rds.instance.endpoint }}",
+        distribution_source_url: "{{ contentauthoring_distribution_url }}",
+
+        elb_name: "{{ contentauthoring_elb_name }}",
+        ecs_cluster_name: "{{ cms_ecs_cluster_name }}",
+        ecs_task_definition_count: "{{ contentauthoring_ecs_task_definition_count }}",
+        ecs_task_definition_revision: "{{ contentauthoring_ecs_task_definition_revision }}",
+        ecs_service_version: "{{ contentauthoring_ecs_service_version }}"
       }

@@ -1,7 +1,12 @@
 ecs_iam_role: "ecsServiceRole"
 
 nginx_container_name: "nginx"
+nginx_image: nginx
 nginx_site_template_path: "/etc/nginx/sites-templates"
+nginx_host_port: 80
+
+hippo_container_name: "hippo"
+hippo_host_port: 8080
 
 ecs_service_name: "{{ ecs_cluster_name }}-{{ component }}"
 ecs_task_definition_family: "{{ ecs_service_name }}"
