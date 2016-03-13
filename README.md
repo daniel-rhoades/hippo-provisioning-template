@@ -33,10 +33,12 @@ Please see the [hippo-production-example wiki](https://github.com/daniel-rhoades
 
 ## Prerequisites
 
-* [Install Ansible](http://www.ansible.com);
+* [Install Ansible](http://www.ansible.com) - currently requires a patched 2.1 devel branch;
 * Register for an [AWS](http://aws.amazon.com) account;
 * Create an admin IAM user and SSH key in AWS for Ansible to use;
 * Create an SSH key.
+
+You can use [daniel-rhoades/ansible-environment](https://github.com/daniel-rhoades/ansible-environment), this will build the latest devel branch of Ansible by running `$ vagrant up development` then all you need to do it SSH into the box, e.g. `$ vagrant ssh development`
 
 This document assumes you are familiar with AWS, if not there are a few guides and books out there.
 
@@ -69,14 +71,14 @@ $ eval "$(./aws-ansible.sh <my-access-key> <my-secret-key> <region>)"
 
 ### Appropriate environment tags
 
-When you come to running the provisioning script you'll need to specify:
+When you come to running the provisioning script you'll probably want to specify (sensible defaults exist):
 
 * `env`: Defaults to 'development', could be anything those, e.g. the latest commit hash;
 * `application`: Defaults to 'gogreen', but I would recommend using a more meaningful name, perhaps your website domain name.
 
 ### RDBMS settings
 
-You'll want to override the default RDBMS information for the Content Store:
+You'll probably want to override the default RDBMS information for the Content Store (sensible defaults exist):
 
 * `contentstore_database_name`: Name of the database instance, defaults to 'gogreen';
 * `contentstore_database_username`: Username that Hippo will use to access the database, defaults to 'gogreen';
@@ -88,15 +90,15 @@ If the database requires configuring with this information (e.g. you want Ansibl
 
 ### AWS environment credentials
 
-The AWS provisioning aspects of Ansible require that you define the following environment variables:
+The AWS provisioning aspects of Ansible require that you define the following environment variables (no defaults exist):
 
 * `AWS_ACCESS_KEY_ID`: For the user who was setup in IAM;
 * `AWS_SECRET_ACCESS_KEY`: For the user who was setup in IAM;
 * `AWS_REGION`: The AWS region you want to infrastructure to be provisioned within, e.g. eu-west-1
 
-You also need to provide the `ssh_key-name` in the form of an Ansible variable.
-
 ### Ansible AWS environment
+
+If you have used [daniel-rhoades/ansible-environment](https://github.com/daniel-rhoades/ansible-environment) then skip this section, as this step was automated for you.
 
 Firstly, follow Ansible's documentation - [Ansible - Amazon Web Services Guide](http://docs.ansible.com/ansible/guide_aws.html) to setting up Ansible's EC2 module, in particular setup the [AWS EC2 External Inventory Script](http://docs.ansible.com/ansible/intro_dynamic_inventory.html#example-aws-ec2-external-inventory-script).
 
@@ -126,12 +128,12 @@ By default the Hippo demo site "gogreen" is deployed from [daniel-rhoades/hippo-
 * `contentauthoring_distribution_url`: URL to the CMS archive, e.g. https://github.com/daniel-rhoades/hippo-gogreen/releases/download/v0.1/gogreen-0.1.0-SNAPSHOT-cms-distribution.tar.gz
 * `contentdelivery_distribution_url`: URL to the "site" archive, e.g. https://github.com/daniel-rhoades/hippo-gogreen/releases/download/v0.1/gogreen-0.1.0-SNAPSHOT-site-distribution.tar.gz
 
-If you prefer to supply your own Docker image containing Hippo (and all its dependencies), then set that using:
+If you prefer to supply your own Docker image containing Hippo, then set that using:
 
 * `contentauthoring_appserver_docker_image`
 * `contentdelivery_appserver_docker_image`
 
-Both default to 'danielrhoades/hippo-tomcat-template'.
+Both default to [danielrhoades/hippo-tomcat-template](https://github.com/daniel-rhoades/hippo-tomcat-template).
 
 ## Run the provisioning script
 
