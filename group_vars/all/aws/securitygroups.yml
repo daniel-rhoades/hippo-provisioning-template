@@ -5,6 +5,7 @@
 # *** DO NOT CHANGE ORDER WITHOUT UPDATING ORDERING ASSUMPTIONS IN PLAYBOOK ***
 #
 
+# Inbound rules
 inbound_security_groups:
   - sg_name: inbound-web
     sg_description: allow http and https access (public)
@@ -38,6 +39,7 @@ inbound_security_groups:
        to_port: 3306
        cidr_ip: "{{ cms_vpc_cidr_block }}"
 
+# Outbound rules
 outbound_security_groups:
   - sg_name: outbound-all
     sg_description: allows outbound traffic to any IP address

@@ -1,5 +1,0 @@
-- include: configure-loadbalancers-vagrant.yml
-  when: provider == "vagrant"
-
-- include: configure-loadbalancers-aws.yml
-  when: provider == "aws"

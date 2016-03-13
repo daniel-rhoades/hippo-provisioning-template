@@ -1,22 +1,22 @@
 ---
-#
-# Variables for VPC
-#
+# Name of the VPC
 cms_vpc_name: "{{ application }}-{{ env }}"
+
+# Region in which to create the VPC within
 cms_vpc_region: "{{ region }}"
+
+# CIDR block range for the VPC
 cms_vpc_cidr_block: "172.40.0.0/16"
 
-# Subnets for ECS cluster (2 AZs)
+# 2 x subnets for the ECS cluster in 2 AZs
 subnet_ecscluster_cidr_block_1: "172.40.10.0/24"
 subnet_ecscluster_az_1: "{{ cms_vpc_region }}a"
-
 subnet_ecscluster_cidr_block_2: "172.40.20.0/24"
 subnet_ecscluster_az_2: "{{ cms_vpc_region }}b"
 
-# Subnets for "Content Store", e.g. RDS (2 AZs)
+# 2 x subnets for Content Store (RDS) in 2 AZs
 subnet_contentstore_cidr_block_1: "172.40.50.0/24"
 subnet_contentstore_az_1: "{{ cms_vpc_region }}a"
-
 subnet_contentstore_cidr_block_2: "172.40.60.0/24"
 subnet_contentstore_az_2: "{{ cms_vpc_region }}b"
 
@@ -58,9 +58,7 @@ cms_vpc_subnets:
     "application": "{{ application }}"
     }
 
-#
 # Routing tables for subnets which require access to the Internet
-#
 cms_public_subnet_routes:
  - subnets:
      - "{{ subnet_ecscluster_cidr_block_1 }}"

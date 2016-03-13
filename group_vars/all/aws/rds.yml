@@ -9,10 +9,17 @@
 # Alternatively defaults can be set in a encrypted file using ansible-vault
 #
 
+# Name of the DB instance
 contentstore_database_instance_name: "{{ cms_vpc_name }}-cstore"
+
+# Database size in GB (min size for RDS is 5GB)
 contentstore_database_size: 5
+
+# Instance type
 contentstore_database_instance_type: db.t2.medium
 
+# Name to give to the group of subnets reserved in your VPC for RDS
 contentstore_subnet_groupname: "{{ cms_vpc_name }}-cstore"
 
+# DB engine type, e.g. MySQL
 db_engine: MySQL

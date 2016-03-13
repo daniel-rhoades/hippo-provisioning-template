@@ -1,6 +1,0 @@
-mysql_docker_container_image: mysql:latest
-mysql_docker_container_port: 3306
-
-mysql_root_password: password
-
-contentstore_init_script_directory: /tmp/contentstore-init

@@ -6,7 +6,7 @@
     module: ec2_elb_lb
     name: "{{ elb_name }}"
     security_group_ids: "{{ elb_security_groups }}"
-    state: present
+    state: "{{ ec2_elb_state }}"
     region: "{{ elb_region }}"
     subnets: "{{ elb_subnets }}"
     purge_subnets: "{{ elb_purge_subnets }}"
@@ -22,17 +22,17 @@
 - name: "AWS | Route 53 | Define the zone"
   route53_zone:
     zone: "{{ route53_zone }}"
-    state: present
+    state: "{{ route53_zone_state }}"
   register: route53zone
 
 - debug: var=route53zone verbosity=4
 
 - name: "AWS | Route 53 | Register the ELB in the zone"
   route53:
-    command: create
+    command: "create"
     zone: "{{ route53_zone }}"
     record: "{{ route53_host }}"
-    type: A
+    type: "A"
     value: "{{ elb.elb.dns_name }}"
     alias: true
     alias_hosted_zone_id: "{{ elb.elb.hosted_zone_id }}"

@@ -1,10 +1,15 @@
 ---
+# Name of the ELB for the Content Delivery component
 contentdelivery_elb_name: "{{ vpc_name }}-cdeli"
+
+# ELB listeners for the Content Delivery component
 contentdelivery_elb_listeners:
  - protocol: http
    load_balancer_port: 80
    instance_protocol: http
    instance_port: 80
+
+# ELB health check definition for the Content Delivery component
 contentdelivery_elb_health_check:
   ping_protocol: "tcp"
   ping_port: 80
@@ -13,12 +18,17 @@ contentdelivery_elb_health_check:
   unhealthy_threshold: 2
   healthy_threshold: 10
 
+# Name of the ELB for the Content Authoring component
 contentauthoring_elb_name: "{{ vpc_name }}-cauth"
+
+# ELB listeners for the Content Authoring component
 contentauthoring_elb_listeners:
  - protocol: http
    load_balancer_port: 80
    instance_protocol: http
    instance_port: 80
+
+# ELB health check definition for the Content Authoring component
 contentauthoring_elb_health_check:
   ping_protocol: "tcp"
   ping_port: 80
@@ -27,4 +37,5 @@ contentauthoring_elb_health_check:
   unhealthy_threshold: 2
   healthy_threshold: 10
 
+# Region in which to create the ELBs
 cms_elb_region: "{{ region }}"

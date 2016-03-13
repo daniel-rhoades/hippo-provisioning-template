@@ -1,2 +1,5 @@
+# Nginx file that is the config for a reverse proxy for Hippo Content Authoring (CMS)
 contentauthoring_reverseproxy_config: hippo-cms-entry.sh
+
+# Nginx file that is the config for a reverse proxy for Hippo Content Delivery (site)
 contentdelivery_reverseproxy_config: hippo-site-entry.sh

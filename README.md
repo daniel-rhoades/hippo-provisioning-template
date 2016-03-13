@@ -11,47 +11,19 @@ Templated provisioning of infrastructure and build for a Hippo project deploymen
 
 Builds upon [daniel-rhoades/hippo-tomcat-template](https://github.com/daniel-rhoades/hippo-tomcat-template) to provision a representative environment that you could use to run your Hippo project in production.
 
-The project has been written such that you can check and get running without any knowledge of Hippo or infrastructure provisioning.  There are two deployment options:
+The project has been written such that you can check and get running without any knowledge of Hippo or infrastructure provisioning.  The following deployment options are available:
 
-* Development environment that is representative of production configuration, uses [Vagrant](https://www.vagrantup.com);
 * Production environment running on [AWS](http://aws.amazon.com).
 
-Both options make heavy use of [Ansible](http://www.ansible.com) to codify the infrastructure, although, again you don't need to know anything about Ansible to get it running.
+Provisioning currently makes heavy use of [Ansible](http://www.ansible.com) to codify the infrastructure, although, again you don't need to know anything about Ansible to get it running.
 
-Provisioning and configuration steps have been separated out as much as possible, such that the Ansible playbook will configure webservers regardless of how/where they are provisioned.
+Provisioning and configuration steps have been separated out as much as possible.
 
 If you want to use this project as a template for your own deployment I would recommend forking it so you can receive patch updates more easily.
 
 ## Architecture
 
 Please see the [hippo-production-example wiki](https://github.com/daniel-rhoades/hippo-provisioning-template/wiki) for detailed information on the [Architecture](https://github.com/daniel-rhoades/hippo-provisioning-template/wiki/Architecture).
-
-## Super quick start (Vagrant)
-
-1. [Install Vagrant](https://docs.vagrantup.com/v2/installation/index.html);
-2. [Clone](https://help.github.com/articles/cloning-a-repository/) this project from GitHub;
-3. In the project directory run: `$ vagrant up`
-
-You should now be able to login to Hippo, the default username/password for Hippo is admin/admin:
-
-* http://localhost/cms
-* http://localhost/site
-
-The CMS component is where you administer the website and the HST ("site") is the public facing side.
-
-If you get any errors during provisioning, then it's usually because some dependency (usually Oracle JDK) failed to download, just run:
-
-* `$ vagrant reload`
-* `$ vagrant provision`
-
-That will re-provision your environment and should clear up any errors.
-
-Now, this is a development environment only, it's representative of a production setup, useful for debugging issues, but it ain't production!  It all runs on a single VM, but in separate Docker containers.  So from a Docker point of view its no different (mostly), but don't rely on it, always test on an identical (near as) to your live environment.
-
-The environment is built almost identically to [daniel-rhoades/hippo-tomcat-template](https://github.com/daniel-rhoades/hippo-tomcat-template) Vagrant setup, but with two important differences:
-
-* The same Ansible playbook used for other target hosting providers (e.g. AWS) is used, but their are specific steps for Vagrant;
-* Nginx has been configured as the reverse proxy for Hippo.
 
 ## Quick start (AWS)
 
@@ -72,6 +44,7 @@ When creating your IAM user in AWS, for a quick start, assign them the following
 
 * AmazonRDSFullAccess
 * AmazonEC2FullAccess
+* AmazonECSFullAccess
 
 In practice you'll want to fine tune permissions, so that user can only administer infrastructure it needs to.
 
@@ -93,8 +66,6 @@ An [example environments script](aws-ansible.sh) to define both AWS and Ansible 
 ```
 $ eval "$(./aws-ansible.sh <my-access-key> <my-secret-key> <region>)"
 ```
-
-A [complete example variables script](vagrant-env.json) is also available which is actually used during Vagrant provisioning, or an AWS example, which just accepts the defaults, providing on the necessary information [aws-env.json](aws-env.json).  Ansible accepts your variables in either YAML or JSON formats, the example used here is JSON.  Investigate vars/*.yml and vars/aws/*.yml for a complete list of variables you can override.
 
 ### Appropriate environment tags
 
@@ -138,15 +109,15 @@ Then you need to specify:
 
 A default configuration is provided in this project, but you are likely to need your own one specific to your site, do this via Ansible variables:
 
-* `contentauthoring_reverseproxy_config`: e.g. hippo-cms.conf.tmpl
-* `contentdelivery_reverseproxy_config`: e.g. hippo-site.conf.tmpl
+* `contentauthoring_reverseproxy_config`: e.g. hippo-cms-entry.sh
+* `contentdelivery_reverseproxy_config`: e.g. hippo-site-entry.sh
 
 If you prefer to supply your own Docker image containing Nginx (and all its dependencies), then set that using:
 
 * `contentauthoring_reverseproxy_docker_image`
 * `contentdelivery_reverseproxy_docker_image`
 
-Both default to 'shepmaster/nginx-template-image'.
+Both default to 'nginx' - the official Docker nginx image.
 
 ### Hippo configuration
 
@@ -167,10 +138,10 @@ Both default to 'danielrhoades/hippo-tomcat-template'.
 The entire solution as outlined in the architecture is provisioned by simply running:
 
 ```
-$ ansible-playbook hippo-provision.yml --extra-vars '@myenv.json' --private-key=<my-ssh-key> -u ubuntu
+$ ansible-playbook provision-aws.yml --private-key=<ssh-key-location> -u ubuntu -vvvv -e ssh_key_name=<iam-ssh-key-name> -e my_route53_zone=<domain-name>
 ```
 
-The `--private key` is the file location of private SSH key (the PEM file) you got from AWS.  The user is the default user for the AWS image you are using, by default this is Ubuntu, so the user is "ubuntu".  The `myenv.json` file is a JSON file you create to hold your custom Ansible variables, alternatively you can just pass a JSON string, e.g. `--extra-vars '{"contentstore_database_name":"gogreen"}'`
+The `--private key` is the file location of private SSH key (the PEM file) you got from AWS.  The user is the default user for the AWS image you are using, by default this is Ubuntu, so the user is "ubuntu".
 
 That's it, in around 45mins you will have a complete Hippo production setup in your AWS account.  By far the longest period of provisioning the database taking around 80% of the overall time.
 
@@ -192,10 +163,8 @@ Soon I plan to add the following to the build:
 
 * Consider Terraform integration;
 * SSL configuration;
-* AWS Cloudfront and AWS WAF options;
-* Docker Swarm, AWS ECS or Mesos options;
+* AWS Cloudfront and AWS WAF options (automation thereof);
 * Immutable infrastructure;
 * Logging, monitoring and alerting;
-* Auto-scaling;
 * Blue/green deployment;
 * Security improvements.

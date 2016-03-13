@@ -5,7 +5,7 @@
 - name: "AWS | ECS | Provision the cluster"
   ecs_cluster:
     name: "{{ ecs_cluster_name }}"
-    state: present
+    state: "{{ ecs_state }}"
   register: ecs_cluster
 
 - debug: var=ecs_cluster verbosity=4
@@ -15,6 +15,7 @@
 - name: "AWS | EC2 | Define a EC2 Launch Configuration for ECS use"
   ec2_lc:
     name: "{{ ec2_launch_configuration_name }}"
+    state: "{{ ecs_state }}"
     image_id: "{{ ec2_ami_id }}"
     key_name: "{{ key_name }}"
     security_groups: "{{ ec2_security_groups }}"
@@ -25,12 +26,13 @@
     user_data: "{{ ec2_userdata }}"
   register: ec2_lc
 
-- debug: var=ec2_lc verbosity=4
+- debug: var=ec2_lc_state verbosity=4
 
 # Container Instances: Define an Auto Scaling Group to manage creating/terminating EC2 instances
 - name: "AWS | EC2 | Define a EC2 Auto Scaling Group for ECS use"
   ec2_asg:
     name: "{{ ec2_asg_name }}"
+    state: "{{ ec2_asg_state }}"
     availability_zones: "{{ ec2_asg_availability_zones }}"
     launch_config_name: "{{ ec2_launch_configuration_name }}"
     min_size: "{{ ec2_asg_min_size }}"

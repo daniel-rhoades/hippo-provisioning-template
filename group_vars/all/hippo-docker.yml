@@ -1,11 +1,8 @@
+# Name of the application
 application_name: gogreen
 
-hippo_tomcat_template_docker_image: danielrhoades/hippo-tomcat-template
-
-contentauthoring_appserver_docker_image: "{{ hippo_tomcat_template_docker_image }}"
-contentauthoring_appserver_container_name: "{{ application_name }}-hippo-cms"
+# URL to a Hippo distribution that will serve as the Content Authoring (CMS) component
 contentauthoring_distribution_url: https://github.com/daniel-rhoades/hippo-gogreen/releases/download/v0.1/gogreen-0.1.0-SNAPSHOT-cms-distribution.tar.gz
 
-contentdelivery_appserver_docker_image: "{{ hippo_tomcat_template_docker_image }}"
-contentdelivery_appserver_container_name: "{{ application_name }}-hippo-site"
+# URL to a Hippo distribution that will serve as the Content Delivery (site) component
 contentdelivery_distribution_url: https://github.com/daniel-rhoades/hippo-gogreen/releases/download/v0.1/gogreen-0.1.0-SNAPSHOT-site-distribution.tar.gz

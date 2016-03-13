@@ -1,19 +1,28 @@
+# Check pre-requisites
+- include: pre-requisites.yml
+
+# Read in the Nginx config file contents
 - set_fact: "nginx_conf_with_dir=files/{{ nginx_conf }}"
 - set_fact: "nginx_conf_contents={{ lookup('file', nginx_conf_with_dir) }}"
 - debug: var=nginx_conf_contents verbosity=4
 
-# Task Definition: A description of an application that contains one or more container definitions
-- name: "Nginx/Tomcat | Describe the application as a task definition"
+# Retire any old task definitions
+- include: task-definition.yml
+  vars:
+    ecs_task_definition_state: "absent"
+
+# ECS Task Definition which holds the logical combination of Nginx as a reverse proxy to Hippo on Tomcat
+- name: "Nginx/Tomcat | Describe the application as an ECS Task Definition"
   ecs_taskdefinition:
-    state: present
+    state: "{{ ecs_task_definition_state }}"
     family: "{{ ecs_task_definition_family }}"
-    revision: "{{ ecs_task_definition_revision }}"
     containers:
+      # Reverse Proxy component - Nginx
       - name: "{{ nginx_container_name }}"
-        cpu: 100
+        cpu: "{{ nginx_cpu }}"
         essential: true
         image: "{{ nginx_image }}"
-        memory: 300
+        memory: "{{ nginx_memory }}"
         entryPoint:
           - "bash"
           - "-c"
@@ -25,11 +34,12 @@
           - containerPort: 80
             hostPort: "{{ nginx_host_port }}"
 
+      # Content Delivery or Authoring component - Hippo running on Tomcat
       - name: "{{ hippo_container_name }}"
-        cpu: 500
+        cpu: "{{ hippo_cpu }}"
         essential: true
         image: "{{ hippo_image }}"
-        memory: 2048
+        memory: "{{ hippo_memory }}"
         environment:
           - name: "HIPPO_CONTENTSTORE_USERNAME"
             value: "{{ contentstore_database_username }}"
@@ -48,13 +58,13 @@
 
 - debug: var=ecs_taskdefinition_output verbosity=4
 
-# Service: An Amazon ECS service allows you to run and maintain a specified number of instances of a task definition simultaneously
-- name: "ECS | Provision a service using the previous task definition for a specific number of instances"
+# ECS Service which runs the Task Definition on the ECS cluster
+- name: "Nginx/Tomcat | Provision an ECS Service using the previous ECS Task Definition"
   ecs_service:
-    state: present
+    state: "{{ ecs_service_state }}"
     name: "{{ ecs_service_name }}"
     cluster: "{{ ecs_cluster_name }}"
-    task_definition: "{{ ecs_task_definition_family }}:{{ ecs_task_definition_revision }}"
+    task_definition: "{{ ecs_task_definition_family }}:{{ ecs_taskdefinition_output.taskdefinition.revision }}"
     desired_count: "{{ ecs_task_definition_count }}"
     role: "{{ ecs_iam_role }}"
     load_balancers:

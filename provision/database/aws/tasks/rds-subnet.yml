@@ -1,8 +1,0 @@
----
-- name: Website | Provision database | AWS | RDS | Create RDS subnet group in the VPC
-  local_action:
-    module: rds_subnet_group
-    state: present
-    name: "{{ rds_subnet_groupname }}"
-    description: "RDS subnet group"
-    subnets: "{{ subnets }}"

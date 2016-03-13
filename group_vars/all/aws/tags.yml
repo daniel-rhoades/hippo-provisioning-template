@@ -2,5 +2,8 @@
 # Tags to apply to AWS components that have been provisioned/modified by this Playbook
 #
 
+# Environment, e.g. development
 env: development
+
+# Name of the system being setup
 application: "{{ application_name }}"

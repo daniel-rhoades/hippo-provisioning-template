@@ -2,3 +2,6 @@
 security_group_resource_tags: {
   "Name": "{{ item.item.sg_name }}"
   }
+
+ec2_inbound_group_state: "present"
+ec2_outbound_group_state: "present"

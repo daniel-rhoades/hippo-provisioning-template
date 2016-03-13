@@ -6,8 +6,8 @@
   connection: local
   gather_facts: no
   pre_tasks:
-    - name: Display all variables/facts known for a host
-      debug: var=hostvars[inventory_hostname]
+    - name: Display all variables/facts known for the host
+      debug: var=hostvars[inventory_hostname] verbosity=4
   roles:
     # Provision networking
     - {
@@ -116,18 +116,12 @@
         role: nginx-hippo-on-ecs,
         component: "contentdelivery",
         vpc_name: "{{ cms_vpc_name }}",
-
         nginx_conf: "{{ contentdelivery_reverseproxy_config }}",
-
-        hippo_image: "{{ contentdelivery_appserver_docker_image }}",
         contentstore_database_host: "{{ rds.instance.endpoint }}",
         distribution_source_url: "{{ contentdelivery_distribution_url }}",
-
         elb_name: "{{ contentdelivery_elb_name }}",
         ecs_cluster_name: "{{ cms_ecs_cluster_name }}",
-        ecs_task_definition_count: "{{ contentdelivery_ecs_task_definition_count }}",
-        ecs_task_definition_revision: "{{ contentdelivery_ecs_task_definition_revision }}",
-        ecs_service_version: "{{ contentdelivery_ecs_service_version }}"
+        ecs_task_definition_count: "{{ contentdelivery_ecs_task_definition_count }}"
       }
 
     # Configure the Content Authoring service
@@ -135,16 +129,10 @@
         role: nginx-hippo-on-ecs,
         component: "contentauthoring",
         vpc_name: "{{ cms_vpc_name }}",
-
         nginx_conf: "{{ contentauthoring_reverseproxy_config }}",
-
-        hippo_image: "{{ contentauthoring_appserver_docker_image }}",
         contentstore_database_host: "{{ rds.instance.endpoint }}",
         distribution_source_url: "{{ contentauthoring_distribution_url }}",
-
         elb_name: "{{ contentauthoring_elb_name }}",
         ecs_cluster_name: "{{ cms_ecs_cluster_name }}",
-        ecs_task_definition_count: "{{ contentauthoring_ecs_task_definition_count }}",
-        ecs_task_definition_revision: "{{ contentauthoring_ecs_task_definition_revision }}",
-        ecs_service_version: "{{ contentauthoring_ecs_service_version }}"
+        ecs_task_definition_count: "{{ contentauthoring_ecs_task_definition_count }}"
       }

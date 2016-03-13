@@ -1,6 +1,0 @@
----
-- include: provision-database-vagrant.yml
-  when: provider == "vagrant"
-
-- include: provision-database-aws.yml
-  when: provider == "aws"

@@ -45,3 +45,8 @@ ec2_asg_tags:
 
 # Wait for EC2 instances within the auto scaling group to become available before moving on to the next task
 ec2_asg_wait: true
+
+# Default component state
+ecs_state: "present"
+ec2_lc_state: "present"
+ec2_asg_state: "present"

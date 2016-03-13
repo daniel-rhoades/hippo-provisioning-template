@@ -1,4 +1,0 @@
----
-- name: Website | Role | Hippo Content Store | Vagrant
-  include: mysql.yml
-  when: provider == "vagrant"
