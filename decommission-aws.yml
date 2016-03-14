@@ -59,6 +59,27 @@
         rds_command: "delete"
       }
 
+    # Get facts on the VPC
+    - {
+        role: aws-vpc,
+        vpc_name: "{{ cms_vpc_name }}",
+        vpc_region: "{{ cms_vpc_region }}",
+        vpc_cidr_block: "{{ cms_vpc_cidr_block }}",
+        vpc_subnets: "{{ cms_vpc_subnets }}",
+        public_subnet_routes: "{{ cms_public_subnet_routes }}"
+      }
+
+    # Decomission the security groups
+    - {
+        role: aws-security-groups,
+        vpc_region: "{{ cms_vpc_region }}",
+        vpc_id: "{{ vpc.vpc_id }}",
+        ec2_group_inbound_sg: "{{ inbound_security_groups }}",
+        ec2_group_outbound_sg: "{{ outbound_security_groups }}",
+        ec2_inbound_group_state: "absent",
+        ec2_outbound_group_state: "absent"
+      }
+
     # Decomission the VPC
     - {
         role: aws-vpc,

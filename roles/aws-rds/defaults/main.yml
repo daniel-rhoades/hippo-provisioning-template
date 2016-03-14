@@ -13,7 +13,7 @@ rds_tags:
 rds_wait: true
 
 # Timeout for waiting for the RDS instance to be created
-rds_wait_timeout: 1800
+rds_wait_timeout: 2700
 
 # Default component states
 rds_subnet_group_state: "present"
