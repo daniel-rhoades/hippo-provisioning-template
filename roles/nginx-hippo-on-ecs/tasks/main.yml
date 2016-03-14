@@ -1,76 +1,107 @@
 # Check pre-requisites
 - include: pre-requisites.yml
 
-# Read in the Nginx config file contents
-- set_fact: "nginx_conf_with_dir=files/{{ nginx_conf }}"
-- set_fact: "nginx_conf_contents={{ lookup('file', nginx_conf_with_dir) }}"
-- debug: var=nginx_conf_contents verbosity=4
+# Commissioning block
+- block:
+  # Read in the Nginx config file contents
+  - set_fact: "nginx_conf_with_dir=files/{{ nginx_conf }}"
+  - set_fact: "nginx_conf_contents={{ lookup('file', nginx_conf_with_dir) }}"
+  - debug: var=nginx_conf_contents verbosity=4
 
-# Retire any old task definitions
-- include: task-definition.yml
-  vars:
-    ecs_task_definition_state: "absent"
+  # ECS Task Definition which holds the logical combination of Nginx as a reverse proxy to Hippo on Tomcat
+  - name: "Nginx/Tomcat | Describe the application as an ECS Task Definition"
+    ecs_taskdefinition:
+      state: "{{ ecs_task_definition_state }}"
+      family: "{{ ecs_task_definition_family }}"
+      containers:
+        # Reverse Proxy component - Nginx
+        - name: "{{ nginx_container_name }}"
+          cpu: "{{ nginx_cpu }}"
+          essential: true
+          image: "{{ nginx_image }}"
+          memory: "{{ nginx_memory }}"
+          entryPoint:
+            - "bash"
+            - "-c"
+          command:
+            - "{{ nginx_conf_contents }}"
+          links:
+            - "{{ hippo_container_name }}:hippo"
+          portMappings:
+            - containerPort: 80
+              hostPort: "{{ nginx_host_port }}"
 
-# ECS Task Definition which holds the logical combination of Nginx as a reverse proxy to Hippo on Tomcat
-- name: "Nginx/Tomcat | Describe the application as an ECS Task Definition"
-  ecs_taskdefinition:
-    state: "{{ ecs_task_definition_state }}"
-    family: "{{ ecs_task_definition_family }}"
-    containers:
-      # Reverse Proxy component - Nginx
-      - name: "{{ nginx_container_name }}"
-        cpu: "{{ nginx_cpu }}"
-        essential: true
-        image: "{{ nginx_image }}"
-        memory: "{{ nginx_memory }}"
-        entryPoint:
-          - "bash"
-          - "-c"
-        command:
-          - "{{ nginx_conf_contents }}"
-        links:
-          - "{{ hippo_container_name }}:hippo"
-        portMappings:
-          - containerPort: 80
-            hostPort: "{{ nginx_host_port }}"
+        # Content Delivery or Authoring component - Hippo running on Tomcat
+        - name: "{{ hippo_container_name }}"
+          cpu: "{{ hippo_cpu }}"
+          essential: true
+          image: "{{ hippo_image }}"
+          memory: "{{ hippo_memory }}"
+          environment:
+            - name: "HIPPO_CONTENTSTORE_USERNAME"
+              value: "{{ contentstore_database_username }}"
 
-      # Content Delivery or Authoring component - Hippo running on Tomcat
-      - name: "{{ hippo_container_name }}"
-        cpu: "{{ hippo_cpu }}"
-        essential: true
-        image: "{{ hippo_image }}"
-        memory: "{{ hippo_memory }}"
-        environment:
-          - name: "HIPPO_CONTENTSTORE_USERNAME"
-            value: "{{ contentstore_database_username }}"
+            - name: "HIPPO_CONTENTSTORE_PASSWORD"
+              value: "{{ contentstore_database_password }}"
 
-          - name: "HIPPO_CONTENTSTORE_PASSWORD"
-            value: "{{ contentstore_database_password }}"
+            - name: "HIPPO_CONTENTSTORE_URL"
+              value: "jdbc:mysql://{{ contentstore_database_host }}:3306/{{ contentstore_database_name }}?characterEncoding=utf8"
 
-          - name: "HIPPO_CONTENTSTORE_URL"
-            value: "jdbc:mysql://{{ contentstore_database_host }}:3306/{{ contentstore_database_name }}?characterEncoding=utf8"
+            - name: "HIPPO_DISTRO_URL"
+              value: "{{ distribution_source_url }}"
+          portMappings:
+            - containerPort: 8080
+    register: ecs_taskdefinition_output
 
-          - name: "HIPPO_DISTRO_URL"
-            value: "{{ distribution_source_url }}"
-        portMappings:
-          - containerPort: 8080
-  register: ecs_taskdefinition_output
+  - debug: var=ecs_taskdefinition_output verbosity=4
 
-- debug: var=ecs_taskdefinition_output verbosity=4
+  # ECS Service which runs the Task Definition on the ECS cluster
+  - name: "Nginx/Tomcat | Provision an ECS Service using the previous ECS Task Definition"
+    ecs_service:
+      state: "{{ ecs_service_state }}"
+      name: "{{ ecs_service_name }}"
+      cluster: "{{ ecs_cluster_name }}"
+      task_definition: "{{ ecs_task_definition_family }}:{{ ecs_taskdefinition_output.taskdefinition.revision }}"
+      desired_count: "{{ ecs_task_definition_count }}"
+      role: "{{ ecs_iam_role }}"
+      load_balancers:
+        - loadBalancerName: "{{ elb_name }}"
+          containerName: "{{ nginx_container_name }}"
+          containerPort: 80
+    register: ecs_service_output
 
-# ECS Service which runs the Task Definition on the ECS cluster
-- name: "Nginx/Tomcat | Provision an ECS Service using the previous ECS Task Definition"
-  ecs_service:
-    state: "{{ ecs_service_state }}"
-    name: "{{ ecs_service_name }}"
-    cluster: "{{ ecs_cluster_name }}"
-    task_definition: "{{ ecs_task_definition_family }}:{{ ecs_taskdefinition_output.taskdefinition.revision }}"
-    desired_count: "{{ ecs_task_definition_count }}"
-    role: "{{ ecs_iam_role }}"
-    load_balancers:
-      - loadBalancerName: "{{ elb_name }}"
-        containerName: "{{ nginx_container_name }}"
-        containerPort: 80
-  register: ecs_service_output
+  - debug: var=ecs_service_output verbosity=4
 
-- debug: var=ecs_service_output verbosity=4
+  when: ecs_service_state == "present"
+
+- block:
+  - name: "Nginx/Tomcat | Get ECS service facts"
+    ecs_service_facts:
+      cluster: "{{ ecs_cluster_name }}"
+      service: "{{ ecs_service_name }}"
+      details: "true"
+    register: ecs_service_facts
+
+  - debug: var=ecs_service_facts verbosity=4
+
+  when: ecs_service_state == "absent"
+
+# Decommissioning block
+- block:
+  # Update the ECS Service to set desired count to zero
+  - name: "Nginx/Tomcat | Scale down the ECS Service to zero"
+    ecs_service:
+      state: "present"
+      name: "{{ ecs_service_name }}"
+      task_definition: "{{ ecs_service_facts.ansible_facts.services[0].taskDefinition }}"
+      cluster: "{{ ecs_cluster_name }}"
+      desired_count: 0
+
+  # Decommission the ECS Service
+  - name: "Nginx/Tomcat | Decommission the ECS Service"
+    ecs_service:
+      state: "absent"
+      name: "{{ ecs_service_name }}"
+      cluster: "{{ ecs_cluster_name }}"
+
+  when: ecs_service_state == "absent" and ecs_service_facts.ansible_facts.services[0].status == "ACTIVE"

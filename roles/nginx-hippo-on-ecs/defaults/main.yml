@@ -36,3 +36,4 @@ ecs_task_definition_family: "{{ ecs_service_name }}"
 # Default component states
 ecs_task_definition_state: "present"
 ecs_service_state: "present"
+ecs_cluster_state: "present"

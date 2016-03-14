@@ -46,6 +46,18 @@ ec2_asg_tags:
 # Wait for EC2 instances within the auto scaling group to become available before moving on to the next task
 ec2_asg_wait: true
 
+# Perform a rolling update if the Launch Configuration has changed
+ec2_asg_replace_all_instances: yes
+
+# Health check interval
+ec2_asg_health_check_period: 60
+
+# Method for performing the health check
+ec2_asg_health_type: EC2
+
+# Scaling cooldown period
+ec2_asg_default_cooldown: 300
+
 # Default component state
 ecs_state: "present"
 ec2_lc_state: "present"
