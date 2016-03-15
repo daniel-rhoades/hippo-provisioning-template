@@ -1,19 +1,23 @@
 # hippo-provisioning-template
 [![Circle CI](https://circleci.com/gh/daniel-rhoades/hippo-provisioning-template.svg?style=svg)](https://circleci.com/gh/daniel-rhoades/hippo-provisioning-template)
 
-Templated provisioning of infrastructure and build for a Hippo project deployment, to include:
+Templated provisioning of infrastructure and build for a Hippo CMS project deployment into [AWS](https://aws.amazon.com), to include:
 
-* DNS
-* Networking
-* Load Balancers
-* Web Servers (hosting [Nginx](https://www.nginx.com) and [Hippo](http://www.onehippo.org) on [Docker](https://www.docker.com))
-* Database server
+* Networking:
+    * [Virtual Private Cloud (VPC)](https://aws.amazon.com/vpc/);
+    * DNS - [Route 53](https://aws.amazon.com/route53/);
+    * Load Balancers - [Elastic Load Balancing (ELB)](https://aws.amazon.com/elasticloadbalancing/);
+* Compute:
+    * Virtual Servers - [Elastic Compute Cloud (EC2)](https://aws.amazon.com/ec2/);
+    * [Auto Scaling](https://aws.amazon.com/autoscaling/);
+    * Container Service - [EC2 Container Service (ECS)](https://aws.amazon.com/ecs/);
+* Database:
+    * [Relational Database Service (RDS)](https://aws.amazon.com/rds/).
 
-Builds upon [daniel-rhoades/hippo-tomcat-template](https://github.com/daniel-rhoades/hippo-tomcat-template) to provision a representative environment that you could use to run your Hippo project in production.
+The playbook will also configure an [ECS Task Definition](http://docs.aws.amazon.com/AmazonECS/latest/developerguide/task_defintions.html) and [ECS Service](http://docs.aws.amazon.com/AmazonECS/latest/developerguide/ecs_services.html) to define a collection of Docker containers which represent the CMS: 
 
-The project has been written such that you can check and get running without any knowledge of Hippo or infrastructure provisioning.  The following deployment options are available:
-
-* Production environment running on [AWS](http://aws.amazon.com).
+* Reverse proxy realised by [Nginx](https://www.nginx.com), using the [official Nginx Docker image](https://hub.docker.com/_/nginx/);
+* Application server realised by [Tomcat](https://tomcat.apache.org), configured for use with a Hippo distribution using the [danielrhoades/hippo-tomcat-template Docker image](https://hub.docker.com/r/danielrhoades/hippo-tomcat-template/).
 
 Provisioning currently makes heavy use of [Ansible](http://www.ansible.com) to codify the infrastructure, although, again you don't need to know anything about Ansible to get it running.
 
@@ -23,9 +27,32 @@ If you want to use this project as a template for your own deployment I would re
 
 ## Architecture
 
-Please see the [hippo-production-example wiki](https://github.com/daniel-rhoades/hippo-provisioning-template/wiki) for detailed information on the [Architecture](https://github.com/daniel-rhoades/hippo-provisioning-template/wiki/Architecture).
+Please see the [hippo-production-template wiki](https://github.com/daniel-rhoades/hippo-provisioning-template/wiki) for detailed information on the [Architecture](https://github.com/daniel-rhoades/hippo-provisioning-template/wiki/Architecture).
 
-## Quick start (AWS)
+## Super quick start
+
+Assuming a *unix environment and all the contextual AWS links are for eu-west-1 (Ireland) region:
+
+1. Clone this project;
+2. Clone the following project [daniel-rhoades/ansible-environment](https://github.com/daniel-rhoades/ansible-environment), this will give you the necessary Ansible environment as a virtual machine.  It might take a while as it builds Ansible from source and so needs a lot of dependencies not in the standard Ubuntu image; 
+3. Provision a Vagrant environment by running `$ vagrant up development` in the `ansible-environment` project root directory
+4. SSH into Vagrant (`$ vagrant ssh development`), your host home directory will be mapped to the directory in the Vagrant virtual machine as `/home/host-machine`
+5. Register for an AWS account, create an IAM user, download the access/secret key and attach the following AWS IAM policy to that user:
+    * `AdministratorAccess`;
+6. Within the AWS console, create an [SSH Key Pair](https://eu-west-1.console.aws.amazon.com/ec2/v2/home?region=eu-west-1#KeyPairs:sort=keyName), this will be the key given to all EC2 instances, note the name you give to this Key Pair;
+    * I will encorporate this into the playbook soon
+7. Run through the [ECS Getting Started](https://eu-west-1.console.aws.amazon.com/ecs/home?region=eu-west-1#/firstRun), on step 2 choose the ELB option, then just keep clicking next;
+    * This is needed just to create the initial ECS roles;
+    * I will encorporate this into the playbook soon
+8. `cd` into this project's root directory, source your AWS environment by running `$ eval "$(./aws-ansible.sh <my-access-key> <my-secret-key> <region>)"` replacing the placeholder values with the access/secret key you just created and use whatever region you want;
+9. Provision the environment by running: `$ ansible-playbook provision-aws.yml -vvvv -e ssh_key_name=<ssh-key-name> -e my_route53_zone=<your-domain>`, replacing the placeholders with your key name and the name of a domain you have created in AWS Route 53 (example.com);
+10. Browse to `http://contentauthoring-gogreen-development.<your-domain>/`, login with admin/admin.  This is the Hippo CMS.  To see the public website browse to `http://contentdelivery-gogreen-development.<your-domain>/`;
+    * By default you will need to modify Hippo repository to work in this environment.  To do this follow the Hippo documentation for [Configuring Virtual Hosts in an Environment](http://www.onehippo.org/library/enterprise/installation-and-configuration/configure-virtual-hosts-in-an-environment.html).  Basically, you need to add 3 properties (`defaultHost`, `showPort`, `showContextPath`) to the `hst:hosts` node in the Hippo console;
+    * I will encorporate this into the playbook soon.
+    
+Once you are done you can decommission the environment by running `$ ansible-playbook decommission-aws.yml -vvvv -e ssh_key_name=<ssh-key-name> -e my_route53_zone=<your-domain>`.
+
+## Quick start
 
 0. Prerequisites
 1. Specify your environment settings
@@ -53,6 +80,8 @@ In practice you'll want to fine tune permissions, so that user can only administ
 Remember to also download the user's access/secret key.
 
 You'll also need to create an SSH key, this key will be used to login to the EC2 instances.  Just make sure you download the private key (PEM file).
+
+Run through the [ECS Getting Started](https://eu-west-1.console.aws.amazon.com/ecs/home?region=eu-west-1#/firstRun), on step 2 choose the ELB option, then just keep clicking next.  This is needed just to create the initial ECS roles, you can delete the cluster afterwards.
 
 ## Specify your environment settings
 
@@ -140,7 +169,7 @@ Both default to [danielrhoades/hippo-tomcat-template](https://github.com/daniel-
 The entire solution as outlined in the architecture is provisioned by simply running:
 
 ```
-$ ansible-playbook provision-aws.yml --private-key=<ssh-key-location> -u ubuntu -vvvv -e ssh_key_name=<iam-ssh-key-name> -e my_route53_zone=<domain-name>
+$ ansible-playbook provision-aws.yml -vvvv -e ssh_key_name=<iam-ssh-key-name> -e my_route53_zone=<domain-name>
 ```
 
 The `--private key` is the file location of private SSH key (the PEM file) you got from AWS.  The user is the default user for the AWS image you are using, by default this is Ubuntu, so the user is "ubuntu".
