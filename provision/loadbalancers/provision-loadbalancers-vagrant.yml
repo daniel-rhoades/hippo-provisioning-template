@@ -1,5 +1,0 @@
-#
-# Setup loadbalancers on Vagrant
-#
-- name: Website | Provision Loadbalancers | Vagrant | Setup
-  debug: var="Do nothing, Vagrant setup will run on a single machine"

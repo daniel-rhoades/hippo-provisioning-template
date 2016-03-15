@@ -1,6 +1,0 @@
----
-- include: provision-networking-vagrant.yml
-  when: provider == "vagrant"
-
-- include: provision-networking-aws.yml
-  when: provider == "aws"

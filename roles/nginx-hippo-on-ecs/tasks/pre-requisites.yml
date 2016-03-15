@@ -1,0 +1,31 @@
+- name: "Nginx/Hippo | ECS | Check nginx_conf have been defined"
+  fail: msg="You must specify the configuration command file which will be run to configure the base Nginx image to serve as the reverse proxy to Hippo"
+  when: nginx_conf is undefined and ecs_service_state == "present" and ecs_cluster_state == "present"
+
+- name: "Nginx/Hippo | ECS | Check component has been defined"
+  fail: msg="You must specify the component you are creating, e.g. contentdelivery or contentauthoring"
+  when: component is undefined and ecs_service_state == "present" and ecs_cluster_state == "present"
+
+- name: "Nginx/Hippo | ECS | Check vpc_name has been defined"
+  fail: msg="You must specify the VPC in which you are creating the Task Definition (required to resolve other variables - this isnt an ECS requirement)"
+  when: vpc_name is undefined
+
+- name: "Nginx/Hippo | ECS | Check contentstore_database_host has been defined"
+  fail: msg="You must specify the database host name that will contain the Content Store"
+  when: contentstore_database_host is undefined and ecs_service_state == "present" and ecs_cluster_state == "present"
+
+- name: "Nginx/Hippo | ECS | Check distribution_source_url has been defined"
+  fail: msg="You must specify the URL of the Hippo distribution (tar.gz) that will be deployed on to Tomcat"
+  when: distribution_source_url is undefined and ecs_service_state == "present" and ecs_cluster_state == "present"
+
+- name: "Nginx/Hippo | ECS | Check elb_name has been defined"
+  fail: msg="You must specify the name of the ELB to use, this will be pointed at the Nginx container"
+  when: elb_name is undefined and ecs_service_state == "present" and ecs_cluster_state == "present"
+
+- name: "Nginx/Hippo | ECS | Check ecs_cluster_name has been defined"
+  fail: msg="You must specify the name of the ECS to create the Task Definition and run the Service within"
+  when: ecs_cluster_name is undefined
+
+- name: "Nginx/Hippo | ECS | Check ecs_task_definition_count has been defined"
+  fail: msg="You must specify the number of copy of the Task Definition you want to create when running the Service"
+  when: ecs_task_definition_count is undefined and ecs_service_state == "present" and ecs_cluster_state == "present"

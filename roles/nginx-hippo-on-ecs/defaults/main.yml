@@ -1,0 +1,39 @@
+# IAM role to use for ECS operations
+ecs_iam_role: "ecsServiceRole"
+
+# Name of the nginx container
+nginx_container_name: "nginx"
+
+# Docker image containing Nginx
+nginx_image: "nginx"
+
+# Port on which Nginx will run
+nginx_host_port: 80
+
+# CPU/Memory allocation for Nginx
+nginx_cpu: 100
+nginx_memory: 300
+
+# Name of the Hippo container
+hippo_container_name: "hippo"
+
+# Docker image containing a configurable Hippo/Tomcat build
+hippo_image: "danielrhoades/hippo-tomcat-template"
+
+# CPU/Memory allocation for Hippo
+hippo_cpu: 500
+hippo_memory: 2048
+
+# Port on which Hippo will run
+hippo_host_port: 8080
+
+# Name to give to the ECS Service
+ecs_service_name: "{{ ecs_cluster_name }}-{{ component }}"
+
+# Name to give to the ECS Task Definition family
+ecs_task_definition_family: "{{ ecs_service_name }}"
+
+# Default component states
+ecs_task_definition_state: "present"
+ecs_service_state: "present"
+ecs_cluster_state: "present"

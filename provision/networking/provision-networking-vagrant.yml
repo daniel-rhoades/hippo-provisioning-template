@@ -1,5 +1,0 @@
-#
-# Do nothing, Vagrant setup will run on a single machine
-#
-- name: Website | Provision networking | Vagrant | Do Nothing
-  debug: var="Do nothing, Vagrant setup will run on a single machine"

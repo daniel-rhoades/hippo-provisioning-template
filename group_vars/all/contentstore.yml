@@ -1,5 +1,8 @@
-contentstore_container_name: "{{ application_name }}-mysql"
-
+# Name of the database to use for the Content Store
 contentstore_database_name: gogreen
+
+# Username to use to access the Content Store
 contentstore_database_username: gogreen
+
+# Password to use to access the Content Store
 contentstore_database_password: password

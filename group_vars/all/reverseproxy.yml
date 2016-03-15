@@ -1,12 +1,5 @@
-nginx_template_docker_image: shepmaster/nginx-template-image
+# Nginx file that is the config for a reverse proxy for Hippo Content Authoring (CMS)
+contentauthoring_reverseproxy_config: hippo-cms-entry.sh
 
-contentauthoring_reverseproxy_docker_image: "{{ nginx_template_docker_image }}"
-contentauthoring_reverseproxy_container_name: "{{ application_name }}-nginx-cms"
-contentauthoring_reverseproxy_container_port: 80
-
-contentdelivery_reverseproxy_docker_image: "{{ nginx_template_docker_image }}"
-contentdelivery_reverseproxy_container_name: "{{ application_name }}-nginx-site"
-contentdelivery_reverseproxy_container_port: 80
-
-contentauthoring_reverseproxy_config: hippo-cms.conf.tmpl
-contentdelivery_reverseproxy_config: hippo-site.conf.tmpl
+# Nginx file that is the config for a reverse proxy for Hippo Content Delivery (site)
+contentdelivery_reverseproxy_config: hippo-site-entry.sh

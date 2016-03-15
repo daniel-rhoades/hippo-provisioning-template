@@ -1,0 +1,10 @@
+# Tags to set on the VPC
+vpc_resource_tags: {
+  "Name":"{{ vpc_name }}"
+  }
+
+# If you want the VPC to be able to directly connect to the Internet
+vpc_internet_gateway: true
+
+# Default component states
+vpc_state: "present"

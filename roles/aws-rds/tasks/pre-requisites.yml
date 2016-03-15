@@ -1,0 +1,32 @@
+- name: "AWS | RDS | Check instance name has been defined (rds_instance_name)"
+  fail: msg="You must specify the instance name for your RDS instance, e.g. my-rds"
+  when: rds_instance_name is undefined
+
+- name: "AWS | RDS | Check instance size has been defined (rds_database_size)"
+  fail: msg="You must specify the instance size in GB for your RDS instance, e.g. 5"
+  when: rds_database_size is undefined and rds_command == "create"
+
+- name: "AWS | RDS | Check instance type has been defined (rds_instance_type)"
+  fail: msg="You must specify the instance type for your RDS instance, e.g. db.t2.medium"
+  when: rds_instance_type is undefined and rds_command == "create"
+
+- name: "AWS | RDS | Check username has been defined (rds_username)"
+  fail: msg="You must specify the username for your RDS instance, e.g. admin"
+  when: rds_username is undefined and rds_command == "create"
+
+- name: "AWS | RDS | Check password has been defined (rds_password)"
+  fail: msg="You must specify the password for your RDS instance, e.g. password"
+  when: rds_password is undefined and rds_command == "create"
+
+- name: "AWS | RDS | Check DB name has been defined (rds_db_name)"
+  fail: msg="You must specify the DB name to create in your RDS instance, e.g. example"
+  when: rds_db_name is undefined and rds_command == "create"
+
+- name: "AWS | RDS | Check subnets has been defined (rds_subnets)"
+  fail: msg="You must specify the subnets for which to host your RDS instance, see README for more information"
+  when: rds_subnets is undefined and rds_command == "create"
+
+- name: "AWS | RDS | Check security groups has been defined (rds_vpc_security_groups)"
+  fail: msg="You must specify the security groups that will apply to your RDS instance, see README for more information"
+  when: rds_vpc_security_groups is undefined and rds_command == "create"
+

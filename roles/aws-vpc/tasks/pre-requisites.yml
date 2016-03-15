@@ -1,0 +1,19 @@
+- name: "AWS | VPC Groups | Check VPC name has been defined (vpc_name)"
+  fail: msg="You must specify the name of the VPC you wish to create, e.g. my-vpc"
+  when: vpc_name is undefined
+
+- name: "AWS | VPC Groups | Check VPC region has been defined (vpc_region)"
+  fail: msg="You must specify the region in which you wish to create the VPC, e.g. eu-west-1"
+  when: vpc_region is undefined
+
+- name: "AWS | VPC Groups | Check VPC CIDR block has been defined (vpc_cidr_block)"
+  fail: msg="You must specify the CIDR block range you wish the VPC to have, e.g. 172.40.0.0/16"
+  when: vpc_cidr_block is undefined
+
+- name: "AWS | VPC Groups | Check VPC subnets block have been defined (vpc_subnets)"
+  fail: msg="You must specify the subnets you wish to create, see the README for more information"
+  when: vpc_subnets is undefined
+
+- name: "AWS | VPC Groups | Check VPC public subnet routes have been defined (public_subnet_routes)"
+  fail: msg="You must specify the public subnets routes you wish to create, see the README for more information"
+  when: public_subnet_routes is undefined

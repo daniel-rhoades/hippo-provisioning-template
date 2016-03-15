@@ -1,0 +1,48 @@
+---
+#
+# Security groups to apply later to services
+#
+# *** DO NOT CHANGE ORDER WITHOUT UPDATING ORDERING ASSUMPTIONS IN PLAYBOOK ***
+#
+
+# Inbound rules
+inbound_security_groups:
+  - sg_name: inbound-web
+    sg_description: allow http and https access (public)
+    sg_rules:
+      - proto: tcp
+        from_port: 80
+        to_port: 80
+        cidr_ip: 0.0.0.0/0
+
+  - sg_name: inbound-app
+    sg_description: allow http and https access (public)
+    sg_rules:
+      - proto: tcp
+        from_port: 8080
+        to_port: 8080
+        cidr_ip: 0.0.0.0/0
+
+  - sg_name: inbound-ssh
+    sg_description: allow ssh access
+    sg_rules:
+     - proto: tcp
+       from_port: 22
+       to_port: 22
+       cidr_ip: 0.0.0.0/0
+
+  - sg_name: internal-inbound-mysql
+    sg_description: allow mysql access (internal only)
+    sg_rules:
+     - proto: tcp
+       from_port: 3306
+       to_port: 3306
+       cidr_ip: "{{ cms_vpc_cidr_block }}"
+
+# Outbound rules
+outbound_security_groups:
+  - sg_name: outbound-all
+    sg_description: allows outbound traffic to any IP address
+    sg_rules:
+      - proto: all
+        cidr_ip: 0.0.0.0/0

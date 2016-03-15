@@ -1,8 +1,0 @@
-#
-# Checks that are common to all providers
-#
-- name: Provider variable
-  debug: var=provider
-
-- fail: msg="You must specify the 'provider' as one of 'ansible' or 'aws'"
-  when: provider is undefined
