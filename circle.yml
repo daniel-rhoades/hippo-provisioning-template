@@ -11,12 +11,9 @@ test:
     - sudo service zookeeper stop
 
     # Install Ansible (development branch)
-    - cd ~
-    - git clone git://github.com/daniel-rhoades/ansible-environment
-    - cd ansible-environment
-    - bash bootstrap-development.sh
-    - bash bootstrap-common.sh
-    - cd ../hippo-provisioning-template
+    - git clone git://github.com/daniel-rhoades/ansible-environment ../ansible-environment
+    - bash ../ansible-environment/bootstrap-development.sh
+    - bash ../ansible-environment/bootstrap-common.sh
 
   post:
     # Run playbook
