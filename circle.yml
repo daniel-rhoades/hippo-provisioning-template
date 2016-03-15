@@ -18,6 +18,5 @@ test:
   post:
     # Run playbook
     - eval "$(./aws-ansible.sh $AWS_ACCESS_KEY_ID $AWS_SECRET_ACCESS_KEY $AWS_REGION)"
-    - export application_name="circle"
-    - ansible-playbook provision-aws.yml -vvvv -e ssh_key_name=$ssh_key_name -e my_route53_zone=$my_route53_zone -e application_name=$application_name
-    - ansible-playbook decommission-aws.yml -vvvv -e ssh_key_name=$ssh_key_name -e my_route53_zone=$my_route53_zone -e application_name=$application_name
+    - ansible-playbook provision-aws.yml -vvvv -e ssh_key_name=$ssh_key_name -e my_route53_zone=$my_route53_zone -e application_name=circle
+    - ansible-playbook decommission-aws.yml -vvvv -e ssh_key_name=$ssh_key_name -e my_route53_zone=$my_route53_zone -e application_name=circle
