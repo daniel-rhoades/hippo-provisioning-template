@@ -1,6 +1,6 @@
 ---
 # Name of the VPC
-cms_vpc_name: "{{ application }}-{{ env }}"
+cms_vpc_name: "{{ application_name }}-{{ env }}"
 
 # Region in which to create the VPC within
 cms_vpc_region: "{{ region }}"

@@ -2,5 +2,8 @@
 # Tags to apply to AWS components that have been provisioned/modified by this Playbook
 #
 
+# Name of the application
+application_name: gogreen
+
 # Environment, e.g. development
 env: development

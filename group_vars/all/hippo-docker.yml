@@ -1,6 +1,3 @@
-# Name of the application
-application_name: gogreen
-
 # URL to a Hippo distribution that will serve as the Content Authoring (CMS) component
 contentauthoring_distribution_url: https://github.com/daniel-rhoades/hippo-gogreen/releases/download/v0.1/gogreen-0.1.0-SNAPSHOT-cms-distribution.tar.gz
 
