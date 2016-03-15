@@ -4,6 +4,3 @@
 
 # Environment, e.g. development
 env: development
-
-# Name of the system being setup
-application: "{{ application_name }}"

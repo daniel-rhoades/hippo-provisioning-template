@@ -31,7 +31,7 @@ cms_vpc_subnets:
    resource_tags: {
     "Name": "{{ cms_vpc_name }}-ecscluster-{{ subnet_ecscluster_az_1 }}",
     "env": "{{ env }}",
-    "application": "{{ application }}"
+    "application": "{{ application_name }}"
     }
 
  - cidr: "{{ subnet_ecscluster_cidr_block_2 }}"
@@ -39,7 +39,7 @@ cms_vpc_subnets:
    resource_tags: {
     "Name":"{{ cms_vpc_name }}-ecscluster-{{ subnet_ecscluster_az_2 }}",
     "env": "{{ env }}",
-    "application": "{{ application }}"
+    "application": "{{ application_name }}"
     }
 
  - cidr: "{{ subnet_contentstore_cidr_block_1 }}"
@@ -47,7 +47,7 @@ cms_vpc_subnets:
    resource_tags: {
     "Name":"{{ cms_vpc_name }}-contentstore-{{ subnet_contentstore_az_1 }}",
     "env": "{{ env }}",
-    "application": "{{ application }}"
+    "application": "{{ application_name }}"
     }
 
  - cidr: "{{ subnet_contentstore_cidr_block_2 }}"
@@ -55,7 +55,7 @@ cms_vpc_subnets:
    resource_tags: {
     "Name":"{{ cms_vpc_name }}-contentstore-{{ subnet_contentstore_az_2 }}",
     "env": "{{ env }}",
-    "application": "{{ application }}"
+    "application": "{{ application_name }}"
     }
 
 # Routing tables for subnets which require access to the Internet
