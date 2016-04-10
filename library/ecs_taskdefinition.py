@@ -136,29 +136,87 @@ class EcsTaskManager:
             self.module.fail_json(msg="Can't describe task - "+str(e))
 
     def is_matching_task(self, expected, existing):
-        expectedContainers = expected['containers']
+        # prepare containers for comaprison
+        existingContainers = list(existing['containerDefinitions']) if 'containerDefinitions' in existing else []
+        expectedContainers = list(expected['containers']) if 'containers' in expected else []
 
-        for container in expectedContainers:
-            # in case those properties are not defined, we put the default values
-            # to match the result from Amazon
-            for list_prop in ['environment', 'mountPoints', 'portMappings', 'volumesFrom']:
-                if list_prop not in container:
-                    container[list_prop] = []
+        for containers in [existingContainers, expectedContainers]:
+            containers.sort(key=lambda k: k['name'])
+            for container in containers:
+                # in case some properties are not defined, we put the default values
+                # and sort lists properties for comaprison
 
-            for mount_point in container['mountPoints']:
-                if 'readOnly' not in mount_point:
-                    mount_point['readOnly'] = False
+                prop_defaults = {
+                    'disableNetworking': False,
+                    'privileged': False,
+                    'readonlyRootFilesystem': False
+                }
 
-            for port_mapping in container['portMappings']:
-                if 'protocol' not in port_mapping:
-                    port_mapping['protocol'] = 'tcp'
+                for prop_name, prop_default in prop_defaults.iteritems():
+                    if prop_name not in container:
+                        container[prop_name] = prop_default
 
-        return (expectedContainers == existing['containerDefinitions'] and
-            expected['volumes'] == existing['volumes'])
+                simple_list_props = [
+                    'links',
+                    'command',
+                    'entryPoint',
+                    'dnsServers',
+                    'dnsSearchDomains',
+                    'dockerSecurityOptions']
+
+                for list_prop in simple_list_props:
+                    if list_prop not in container:
+                        container[list_prop] = []
+                    else:
+                        container[list_prop].sort()
+
+                complex_list_props = {
+                    'environment': 'name',
+                    'mountPoints': 'sourceVolume',
+                    'portMappings': 'containerPort',
+                    'volumesFrom': 'sourceContainer',
+                    'ulimits': 'name',
+                    'extraHosts': 'hostname' }
+
+                for list_prop, sort_key in complex_list_props.iteritems():
+                    if list_prop not in container:
+                        container[list_prop] = []
+                    else:
+                        container[list_prop].sort(key=lambda k: k[sort_key])
+
+                complex_list_defaults = {
+                    'mountPoints': {
+                        'readOnly': False
+                    },
+                    'portMappings': {
+                        'protocol': 'tcp'
+                    },
+                    'volumesFrom': {
+                        'readOnly': False
+                    } }
+
+                for list_prop, prop_defaults in complex_list_defaults.iteritems():
+                    for list_elem in container[list_prop]:
+                        for prop_name, prop_default in prop_defaults.iteritems():
+                            if prop_name not in list_elem:
+                                list_elem[prop_name] = prop_default
+
+        # prepare volumes for comaprison
+        #existingVolumes = list(existing['volumes']) if 'volumes' in existing else []
+        #expectedVolumes = list(expected['volumes']) if 'volumes' in expected is not None else []
+        existingVolumes = list(existing['volumes']) if existing['volumes'] else []
+        expectedVolumes = list(expected['volumes']) if expected['volumes'] else []
+
+        for volumes in [existingVolumes, expectedVolumes]:
+            volumes.sort(key=lambda k: k['name'])
+
+        # compare task definitions
+        return (expectedContainers == existingContainers and
+                expectedVolumes == existingVolumes)
 
     def register_task(self, family, container_definitions, volumes):
         response = self.ecs.register_task_definition(family=family,
-            containerDefinitions=container_definitions, volumes=volumes)
+                                                     containerDefinitions=container_definitions, volumes=volumes)
         return response['taskDefinition']
 
     def deregister_task(self, taskArn):
@@ -169,21 +227,21 @@ def main():
 
     argument_spec = ec2_argument_spec()
     argument_spec.update(dict(
-        state=dict(required=True, choices=['present', 'absent'] ),
-        arn=dict(required=False, type='str' ),
-        family=dict(required=False, type='str' ),
-        revision=dict(required=False, type='int' ),
-        containers=dict(required=False, type='list' ),
-        volumes=dict(required=False, type='list' )
+            state=dict(required=True, choices=['present', 'absent'] ),
+            arn=dict(required=False, type='str' ),
+            family=dict(required=False, type='str' ),
+            revision=dict(required=False, type='int' ),
+            containers=dict(required=False, type='list' ),
+            volumes=dict(required=False, type='list' )
     ))
 
     module = AnsibleModule(argument_spec=argument_spec, supports_check_mode=True)
 
     if not HAS_BOTO:
-      module.fail_json(msg='boto is required.')
+        module.fail_json(msg='boto is required.')
 
     if not HAS_BOTO3:
-      module.fail_json(msg='boto3 is required.')
+        module.fail_json(msg='boto3 is required.')
 
     task_to_describe = None
     # When deregistering a task, we can specify the ARN OR
@@ -210,9 +268,9 @@ def main():
     results = dict(changed=False)
     if module.params['state'] == 'present':
         if (existing and
-            'status' in existing and
-            existing['status'] == "ACTIVE" and
-            task_mgr.is_matching_task(module.params, existing)):
+                    'status' in existing and
+                    existing['status'] == "ACTIVE" and
+                task_mgr.is_matching_task(module.params, existing)):
 
             results['taskdefinition'] = existing
         else:
@@ -224,7 +282,7 @@ def main():
                 if volumes is None:
                     volumes = []
                 results['taskdefinition'] = task_mgr.register_task(module.params['family'],
-                    module.params['containers'], volumes)
+                                                                   module.params['containers'], volumes)
             results['changed'] = True
 
     # delete the cloudtrai

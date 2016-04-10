@@ -46,9 +46,7 @@ Assuming a *unix environment and all the contextual AWS links are for eu-west-1 
     * I will encorporate this into the playbook soon
 8. `cd` into this project's root directory, source your AWS environment by running `$ eval "$(./aws-ansible.sh <my-access-key> <my-secret-key> <region>)"` replacing the placeholder values with the access/secret key you just created and use whatever region you want;
 9. Provision the environment by running: `$ ansible-playbook provision-aws.yml -vvvv -e ssh_key_name=<ssh-key-name> -e my_route53_zone=<your-domain>`, replacing the placeholders with your key name and the name of a domain you have created in AWS Route 53 (example.com);
-10. Browse to `http://contentauthoring-gogreen-development.<your-domain>/`, login with admin/admin.  This is the Hippo CMS.  To see the public website browse to `http://contentdelivery-gogreen-development.<your-domain>/`;
-    * By default you will need to modify Hippo repository to work in this environment.  To do this follow the Hippo documentation for [Configuring Virtual Hosts in an Environment](http://www.onehippo.org/library/enterprise/installation-and-configuration/configure-virtual-hosts-in-an-environment.html).  Basically, you need to add 3 properties (`defaultHost`, `showPort`, `showContextPath`) to the `hst:hosts` node in the Hippo console;
-    * I will encorporate this into the playbook soon.
+10. Browse to `http://contentauthoring-gogreen-development.<your-domain>/`, login with admin/admin.  This is the Hippo CMS.  To see the public website browse to `http://contentdelivery-gogreen-development.<your-domain>/`.
     
 Once you are done you can decommission the environment by running `$ ansible-playbook decommission-aws.yml -vvvv -e ssh_key_name=<ssh-key-name> -e my_route53_zone=<your-domain>`.
 
